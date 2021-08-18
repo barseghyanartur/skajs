@@ -49,6 +49,12 @@ Latest stable version from PyPI:
 
 Usage examples
 ==============
+Some of the example are listed in the examples.js file. Run them as follows:
+
+.. code-block:: sh
+
+    node examples.js
+
 Basic usage
 -----------
 Sender side
