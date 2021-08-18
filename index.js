@@ -195,6 +195,42 @@ export class Signature {
 }
 
 /**
+ * Validate signature.
+ *
+ * @param {string} signature
+ * @param {string} authUser
+ * @param {string} secretKey
+ * @param {string|number} validUntil
+ * @param {Object} extra
+ * @param {boolean} returnObject
+ * @returns {boolean}
+ */
+export function validateSignature(
+    signature,
+    authUser,
+    secretKey,
+    validUntil,
+    extra = null,
+    returnObject = false
+) {
+    if (!extra) {
+        extra = {};
+    }
+
+    const sig = generateSignature(
+        authUser,
+        secretKey,
+        validUntil,
+        SIGNATURE_LIFETIME,
+        extra
+    );
+
+    if (!returnObject) {
+        return sig.signature === signature && !sig.isExpired();
+    }
+}
+
+/**
  * *******************************************
  * ****************** Utils ******************
  * *******************************************
@@ -251,7 +287,25 @@ export class RequestHelper {
      * @param {Object} data
      * @param {string} secretKey
      */
-    validateRequestData(data, secretKey) {}
+    validateRequestData(data, secretKey) {
+        const signature = data[this.signatureParam];
+        const authUser = data[this.authUserParam];
+        const validUntil = data[this.validUntilParam];
+        let _extra = data[this.extraParam];
+        let extraData = {};
+        if (_extra) {
+            _extra = _extra.split(",");
+            extraData = extractSignedData(data, _extra);
+        }
+
+        return validateSignature(
+            signature,
+            authUser,
+            secretKey,
+            validUntil,
+            extraData
+        );
+    }
 }
 
 /**

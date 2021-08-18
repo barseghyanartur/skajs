@@ -8,6 +8,8 @@ import {
     makeHash,
     dictKeys,
     extractSignedData,
+    validateSignature,
+    makeValidUntil,
 } from "./index.js";
 
 /**
@@ -299,3 +301,20 @@ const extractedSignedData = extractSignedData(
 );
 console.log("\n === \n extractedSignedData \n === \n");
 console.log(extractedSignedData);
+
+let validSignature = generateSignature(
+    AUTH_USER,
+    SECRET_KEY,
+    makeValidUntil(),
+    SIGNATURE_LIFETIME,
+    null
+);
+const isValidSignature = validateSignature(
+    validSignature.signature,
+    validSignature.authUser,
+    SECRET_KEY,
+    validSignature.validUntil,
+    validSignature.extra
+);
+console.log("\n === \n isValidSignature \n === \n");
+console.log(isValidSignature);

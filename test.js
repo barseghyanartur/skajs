@@ -11,6 +11,8 @@ import {
     isObject,
     Signature,
     extractSignedData,
+    makeValidUntil,
+    validateSignature,
 } from "./index.js";
 // import {getSignatureData} from "./examples";
 
@@ -797,4 +799,41 @@ test("Test extractSignedData", (t) => {
         },
     };
     t.deepEqual(extractedSignedData, expectedExtractedSignedData);
+});
+
+test("Test validateSignature", (t) => {
+    // Test case 1 - valid non-expired signature
+    const signature = generateSignature(
+        AUTH_USER,
+        SECRET_KEY,
+        makeValidUntil(),
+        SIGNATURE_LIFETIME,
+        null
+    );
+    const isValidSignature = validateSignature(
+        signature.signature,
+        signature.authUser,
+        SECRET_KEY,
+        signature.validUntil,
+        signature.extra
+    );
+    t.is(isValidSignature, true);
+
+    // Test case 2 - expired signature
+    const signature2 = generateSignature(
+        AUTH_USER,
+        SECRET_KEY,
+        validUntil,
+        SIGNATURE_LIFETIME,
+        null
+    );
+    const isValidSignature2 = validateSignature(
+        signature2.signature,
+        signature2.authUser,
+        SECRET_KEY,
+        signature2.validUntil,
+        signature2.extra
+    );
+    t.is(isValidSignature2, false);
+    t.is(signature2.isExpired(), true);
 });
