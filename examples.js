@@ -7,6 +7,7 @@ import {
     generateSignature,
     makeHash,
     dictKeys,
+    extractSignedData,
 } from "./index.js";
 
 /**
@@ -291,3 +292,10 @@ console.log(encodedData2);
 const orderedPayload = dictToOrderedDict(PAYLOAD);
 console.log("\n === \n orderedPayload \n === \n");
 console.log(orderedPayload);
+
+const extractedSignedData = extractSignedData(
+    signatureDict,
+    SIGNATURE_DATA_KEYS
+);
+console.log("\n === \n extractedSignedData \n === \n");
+console.log(extractedSignedData);

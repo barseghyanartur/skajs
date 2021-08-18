@@ -140,6 +140,23 @@ export function dictKeys(dict, returnString = false) {
 }
 
 /**
+ * Filters out non-white-listed items from the ``extra`` array given.
+ *
+ * @param {Object} data
+ * @param {Array} extra
+ * @returns {Object}
+ */
+export function extractSignedData(data, extra) {
+    let dataCopy = JSON.parse(JSON.stringify(data));
+    for (const [key, value] of Object.entries(dataCopy)) {
+        if (extra.indexOf(key) < 0) {
+            delete dataCopy[key];
+        }
+    }
+    return dataCopy;
+}
+
+/**
  * *******************************************
  * ****************** Base *******************
  * *******************************************
@@ -228,6 +245,13 @@ export class RequestHelper {
 
         return combined;
     }
+
+    /**
+     * Validate request data.
+     * @param {Object} data
+     * @param {string} secretKey
+     */
+    validateRequestData(data, secretKey) {}
 }
 
 /**
@@ -374,4 +398,36 @@ export function signatureToDict(
     );
 
     return requestHelper.signatureToDict(signature);
+}
+
+/**
+ * Validate signed request data.
+ *
+ * @param data
+ * @param secretKey
+ * @param signatureParam
+ * @param authUserParam
+ * @param validUntilParam
+ * @param extraParam
+ * @param validate
+ * @param failSilently
+ */
+export function validateSignedRequestData(
+    data,
+    secretKey,
+    signatureParam = DEFAULT_SIGNATURE_PARAM,
+    authUserParam = DEFAULT_AUTH_USER_PARAM,
+    validUntilParam = DEFAULT_VALID_UNTIL_PARAM,
+    extraParam = DEFAULT_EXTRA_PARAM,
+    validate = false,
+    failSilently = false
+) {
+    const requestHelper = new RequestHelper(
+        signatureParam,
+        authUserParam,
+        validUntilParam,
+        extraParam
+    );
+
+    const validationResult = requestHelper.validateRequestData(data, secretKey);
 }
