@@ -164,6 +164,13 @@ Simply type:
 
     npm test
 
+Code style
+==========
+
+.. code-block:: sh
+
+    npx prettier --write .
+
 Writing documentation
 =====================
 Keep the following hierarchy.

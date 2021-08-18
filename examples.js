@@ -28,7 +28,7 @@ export function getSignatureData(requestData) {
 /**
  * Sample payload.
  */
-const payload = {
+const PAYLOAD = {
     order_lines: [
         {
             quantity: 4,
@@ -160,12 +160,12 @@ const SIGNATURE_DATA_KEYS = [
 /**
  * Signature data
  */
-const signatureData = getSignatureData(payload);
+const SIGNATURE_DATA = getSignatureData(PAYLOAD);
 
 console.log("\n === \n signatureData \n === \n");
-console.log(signatureData);
+console.log(SIGNATURE_DATA);
 
-const sortedSignatureData = dictToOrderedDict(signatureData);
+const sortedSignatureData = dictToOrderedDict(SIGNATURE_DATA);
 
 console.log("\n === \n sortedSignatureData \n === \n");
 console.log(sortedSignatureData);
@@ -174,7 +174,7 @@ let validUntil = parseFloat(1628717009.0).toFixed(1);
 console.log("\n === \n validUntil \n === \n");
 console.log(validUntil);
 
-const keys = dictKeys(payload);
+const keys = dictKeys(PAYLOAD);
 
 console.log("\n === \n keys \n === \n");
 console.log(keys);
@@ -240,18 +240,18 @@ const signature3 = generateSignature(
     SECRET_KEY,
     validUntil,
     SIGNATURE_LIFETIME,
-    signatureData
+    SIGNATURE_DATA
 );
 
 console.log("\n === \n signature3 \n === \n");
 console.log(signature3);
 
 const signatureDict = signatureToDict(
-    payload["webshop_id"],
+    PAYLOAD["webshop_id"],
     SECRET_KEY,
     validUntil,
     SIGNATURE_LIFETIME,
-    signatureData,
+    SIGNATURE_DATA,
     "webshop_id"
 );
 
@@ -259,7 +259,7 @@ console.log("\n === \n signatureDict \n === \n");
 console.log(signatureDict);
 
 const signatureDict2 = signatureToDict(
-    payload["webshop_id"],
+    PAYLOAD["webshop_id"],
     SECRET_KEY,
     validUntil,
     SIGNATURE_LIFETIME,
@@ -280,14 +280,14 @@ const base2 = getBase(AUTH_USER, validUntil, { 1: "1", 2: "2" });
 console.log("\n === \n base2 \n === \n");
 console.log(base2);
 
-const encodedData = sortedURLEncode(signatureData);
+const encodedData = sortedURLEncode(SIGNATURE_DATA);
 console.log("\n === \n encodedData \n === \n");
 console.log(encodedData);
 
-const encodedData2 = sortedURLEncode(signatureData, false);
+const encodedData2 = sortedURLEncode(SIGNATURE_DATA, false);
 console.log("\n === \n encodedData2 \n === \n");
 console.log(encodedData2);
 
-const orderedPayload = dictToOrderedDict(payload);
+const orderedPayload = dictToOrderedDict(PAYLOAD);
 console.log("\n === \n orderedPayload \n === \n");
 console.log(orderedPayload);
