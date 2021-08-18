@@ -1,13 +1,12 @@
-===
-ska
-===
+# ska
+
 Lets you easily sign data, using symmetric-key algorithm encryption. Allows
 you to validate signed data and identify possible validation errors. Uses
 sha/hmac for signature encryption. Comes with shortcut functions for signing (and
 validating) dictionaries and URLs.
 
-Key concepts
-============
+## Key concepts
+
 Hosts, that communicate with each other, share the Secret Key, which is used
 to sign data (requests). Secret key is never sent around.
 
@@ -23,69 +22,70 @@ the requests.
 On the recipient side, (HTTP request) data is validated using the shared
 Secret Key. It's being checked whether signature is valid and not expired.
 
-.. code-block:: text
-
+```
     ┌─────────────┐           Data              ┌─────────────┐
     │   Host 1    ├────────────────────────────>│   Host 2    │
     │ ─────────── │                             │ ─────────── │
     │ secret key  │                             │ secret key  │
     │ 'my-secret' │<────────────────────────────┤ 'my-secret' │
     └─────────────┘           Data              └─────────────┘
+```
 
-Features
-========
+## Features
+
 - Sign dictionaries.
 - Validate signed dictionaries.
 - Sign URLs. Append and sign additional URL data.
 - Validate URLs.
 
-Installation
-============
-Latest stable version from PyPI:
+## Installation
 
-.. code-block:: sh
+Latest stable version from NPM registry:
 
-    npm install skajs
+```shell
+npm install skajs
+```
 
-Usage examples
-==============
-Some of the example are listed in the examples.js file. Run them as follows:
+## Usage examples
+Some of the examples are listed in the ``examples.js`` file. Run them as follows:
 
-.. code-block:: sh
+```shell
+node examples.js
+```
 
-    node examples.js
+### Basic usage
 
-Basic usage
------------
-Sender side
-~~~~~~~~~~~
+#### Sender side
+
 Signing dictionaries is as simple as follows.
 
 Required imports.
 
-.. code-block:: javascript
+```javascript
+import { signatureToDict } from 'skajs';
+```
 
-    import { signatureToDict } from 'skajs';
+Signing data:
 
-Producing a signed URL.
+```javascript
+const signatureDict = signatureToDict(
+    'user',
+    'your-secret_key',
+    null,
+    null,
+    {"1": "1", "2": "2"},
+)
+```
 
-.. code-block:: javascript
+Sample output:
 
-    const signatureDict = signatureToDict(
-        'user',
-        'your-secret_key',
-		null,
-		null,
-        {"1": "1", "2": "2"},
-    )
-
-.. code-block:: text
-
-    {
-        'signature': 'YlZpLFsjUKBalL4x5trhkeEgqE8=',
-        'auth_user': 'user',
-        'valid_until': '1378045287.0'
-    }
+```json
+{
+    'signature': 'YlZpLFsjUKBalL4x5trhkeEgqE8=',
+    'auth_user': 'user',
+    'valid_until': '1378045287.0'
+}
+```
 
 Default lifetime of a signature is 10 minutes (600 seconds). If you want it
 to be different, provide a ``lifetime`` argument to ``signUrl`` function.
@@ -109,95 +109,70 @@ set its' value to empty string.
 
 Adding of additional data to the signature works in the same way:
 
-.. code-block:: javascript
-
-    signature_dict = signatureToDict(
-		'user',
-        'your-secret_key',
-		null,
-		null,
-        {
-            'email': 'john.doe@mail.example.com',
-            'first_name': 'John',
-            'last_name': 'Doe'
-        }
-    )
-
-.. code-block:: text
-
+```javascript
+signature_dict = signatureToDict(
+    'user',
+    'your-secret_key',
+    null,
+    null,
     {
-        'auth_user': 'user',
         'email': 'john.doe@mail.example.com',
-        'extra': 'email,first_name,last_name',
         'first_name': 'John',
-        'last_name': 'Doe',
-        'signature': 'cnSoU/LnJ/ZhfLtDLzab3a3gkug=',
-        'valid_until': 1387616469.0
+        'last_name': 'Doe'
     }
+)
+```
 
-Recipient side
-~~~~~~~~~~~~~~
+Sample output:
+
+```javascript
+{
+    'auth_user': 'user',
+    'email': 'john.doe@mail.example.com',
+    'extra': 'email,first_name,last_name',
+    'first_name': 'John',
+    'last_name': 'Doe',
+    'signature': 'cnSoU/LnJ/ZhfLtDLzab3a3gkug=',
+    'valid_until': 1387616469.0
+}
+```
+
+#### Recipient side
+
 Validating the signed request data is as simple as follows.
 
 Required imports.
 
-.. code-block:: python
-
-    import { validateSignedRequestData } from 'skajs'
+```javascript
+import { validateSignedRequestData } from 'skajs'
+```
 
 Validating the signed request data. Note, that ``data`` value is expected to
 be a dictionary; ``request.GET`` is given as an example. It will most likely
 vary from what's used in your framework (unless you use Django).
 
-.. code-block:: python
-
-    validationResult = validateSignedRequestData(
-        request.GET,  # Note, that ``request.GET`` is given as example.
-        'your-secret_key'
-    )
+```javascript
+validationResult = validateSignedRequestData(
+    request.GET,  # Note, that ``request.GET`` is given as example.
+    'your-secret_key'
+)
+```
 
 Testing
 =======
 Simply type:
 
-.. code-block:: sh
-
-    npm test
+```shell
+npm test
+```
 
 Code style
 ==========
+The ``Prettier`` is used.
 
-.. code-block:: sh
-
-    npx prettier --write .
-
-Writing documentation
-=====================
-Keep the following hierarchy.
-
-.. code-block:: text
-
-    =====
-    title
-    =====
-
-    header
-    ======
-
-    sub-header
-    ----------
-
-    sub-sub-header
-    ~~~~~~~~~~~~~~
-
-    sub-sub-sub-header
-    ++++++++++++++++++
-
-    sub-sub-sub-sub-header
-    ^^^^^^^^^^^^^^^^^^^^^^
-
-    sub-sub-sub-sub-sub-header
-    **************************
+```shell
+npx prettier --write .
+```
 
 License
 =======

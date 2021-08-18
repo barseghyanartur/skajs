@@ -1,7 +1,7 @@
 {
     "name": "skajs",
-    "version": "0.0.1",
-    "description": "Sort the keys of an object",
+    "version": "0.0.2",
+    "description": "Sign- and validate- data (dictionaries, strings) using symmetric-key algorithm.",
     "license": "MIT",
     "repository": "barseghyanartur/skajs",
     "author": {
@@ -21,18 +21,11 @@
         "index.js"
     ],
     "keywords": [
-        "sort",
-        "object",
-        "keys",
-        "key",
-        "stable",
-        "deterministic",
-        "deep",
-        "recursive",
-        "recursively",
-        "array",
-        "sorted",
-        "sorting"
+        "sign data",
+        "sign (HTTP) request",
+        "symmetric-key algorithm",
+        "encryption",
+        "sign URL"
     ],
     "dependencies": {
         "is-obj": "^3.0.0"
