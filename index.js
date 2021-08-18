@@ -47,7 +47,7 @@ export const DEFAULT_EXTRA_PARAM = "extra";
  * @returns {boolean}
  */
 export function isObject(value) {
-  return value && typeof value === 'object' && value.constructor === Object;
+    return value && typeof value === 'object' && value.constructor === Object;
 }
 
 /**
@@ -57,12 +57,12 @@ export function isObject(value) {
  * @returns {string}
  */
 export function toString(value) {
-	return Object.entries(value).reduce((a, e) => {
-		if (typeof e[1] != "function") {
-			a += `'${e[0]}': '${e[1]}', `;
-		}
-		return a;
-	}, "{").slice(1, -2) + "}";
+    return Object.entries(value).reduce((a, e) => {
+        if (typeof e[1] != "function") {
+            a += `'${e[0]}': '${e[1]}', `;
+        }
+        return a;
+    }, "{").slice(1, -2) + "}";
 }
 
 /**
@@ -72,7 +72,7 @@ export function toString(value) {
  * @param {boolean} quoted
  * @returns {string}
  */
-export function sortedURLEncode(data, quoted=true) {
+export function sortedURLEncode(data, quoted = true) {
     let orderedData = dictToOrderedDict(data);
     let _sorted = [];
     for (const [key, value] of Object.entries(orderedData)) {
@@ -100,7 +100,10 @@ export function dictToOrderedDict(value) {
         return value;
     if (Array.isArray(value))
         return value.map(dictToOrderedDict);
-    return Object.keys(value).sort().reduce((o, k) => ({...o, [k]: dictToOrderedDict(value[k])}), {});
+    return Object.keys(value).sort().reduce((o, k) => ({
+        ...o,
+        [k]: dictToOrderedDict(value[k])
+    }), {});
 }
 
 /**
@@ -109,9 +112,9 @@ export function dictToOrderedDict(value) {
  * @param {number} lifetime
  * @returns {number}
  */
-export function makeValidUntil(lifetime=SIGNATURE_LIFETIME) {
-	let validUntil = new Date();
-	validUntil.setSeconds(validUntil.getSeconds() + lifetime);
+export function makeValidUntil(lifetime = SIGNATURE_LIFETIME) {
+    let validUntil = new Date();
+    validUntil.setSeconds(validUntil.getSeconds() + lifetime);
     return validUntil / 1000;
 }
 
@@ -122,7 +125,7 @@ export function makeValidUntil(lifetime=SIGNATURE_LIFETIME) {
  * @param {boolean} returnString
  * @returns {string|string[]}
  */
-export function dictKeys(dict, returnString=false) {
+export function dictKeys(dict, returnString = false) {
     let keys = Object.keys(dict);
     keys.sort();
     if (returnString) {
@@ -141,14 +144,14 @@ export function dictKeys(dict, returnString=false) {
  * Signature.
  */
 export class Signature {
-	/**
-	 * Constructor.
-	 *
-	 * @param {string} signature
-	 * @param {string} authUser
-	 * @param {string|number} validUntil
-	 * @param {Object} extra
-	 */
+    /**
+     * Constructor.
+     *
+     * @param {string} signature
+     * @param {string} authUser
+     * @param {string|number} validUntil
+     * @param {Object} extra
+     */
     constructor(signature, authUser, validUntil, extra) {
         this.signature = signature;
         this.authUser = authUser;
@@ -156,12 +159,12 @@ export class Signature {
         this.extra = extra ? extra : {};
     }
 
-	/**
-	 * Check if signature is expired.
-	 *
-	 * @returns {boolean}
-	 */
-	isExpired() {
+    /**
+     * Check if signature is expired.
+     *
+     * @returns {boolean}
+     */
+    isExpired() {
         let now = new Date();
         let validUntil = unixTimestampToDate(this.validUntil);
         let res = validUntil > now;
@@ -180,32 +183,32 @@ export class Signature {
  * Request helper.
  */
 export class RequestHelper {
-	/**
-	 * Constructor.
-	 *
-	 * @param {string} signatureParam
-	 * @param {string} authUserParam
-	 * @param {string} validUntilParam
-	 * @param {string} extraParam
-	 */
+    /**
+     * Constructor.
+     *
+     * @param {string} signatureParam
+     * @param {string} authUserParam
+     * @param {string} validUntilParam
+     * @param {string} extraParam
+     */
     constructor(
-        signatureParam=DEFAULT_SIGNATURE_PARAM,
-        authUserParam=DEFAULT_AUTH_USER_PARAM,
-        validUntilParam=DEFAULT_VALID_UNTIL_PARAM,
-        extraParam=DEFAULT_EXTRA_PARAM,
+        signatureParam = DEFAULT_SIGNATURE_PARAM,
+        authUserParam = DEFAULT_AUTH_USER_PARAM,
+        validUntilParam = DEFAULT_VALID_UNTIL_PARAM,
+        extraParam = DEFAULT_EXTRA_PARAM,
     ) {
         this.signatureParam = DEFAULT_SIGNATURE_PARAM,
-        this.authUserParam = authUserParam;
+            this.authUserParam = authUserParam;
         this.validUntilParam = validUntilParam;
         this.extraParam = extraParam;
     }
 
-	/**
-	 * Signature to dict.
-	 *
-	 * @param {Signature} signature
-	 * @returns {{}}
-	 */
+    /**
+     * Signature to dict.
+     *
+     * @param {Signature} signature
+     * @returns {{}}
+     */
     signatureToDict(signature) {
         let data = {};
 
@@ -250,7 +253,7 @@ export function unixTimestampToDate(validUntil) {
  * @param {Object} extra
  * @returns {string}
  */
-export function getBase(authUser, validUntil, extra=null) {
+export function getBase(authUser, validUntil, extra = null) {
     if (!extra) {
         extra = {};
     }
@@ -279,16 +282,16 @@ export function getBase(authUser, validUntil, extra=null) {
  * @param {Object} extra
  * @returns {Promise<ArrayBuffer>}
  */
- export function makeHash(authUser, secretKey, validUntil=null, extra=null) {
+export function makeHash(authUser, secretKey, validUntil = null, extra = null) {
     if (!extra) {
         extra = {};
     }
 
-    let _base = getBase(authUser, validUntil, extra=extra);
+    let _base = getBase(authUser, validUntil, extra = extra);
     let rawHmac = createHmac('sha1', secretKey);
     rawHmac.update(_base);
-	return rawHmac.digest();
- }
+    return rawHmac.digest();
+}
 
 
 /**
@@ -304,9 +307,9 @@ export function getBase(authUser, validUntil, extra=null) {
 export function generateSignature(
     authUser,
     secretKey,
-    validUntil=null,
-    lifetime=SIGNATURE_LIFETIME,
-    extra=null
+    validUntil = null,
+    lifetime = SIGNATURE_LIFETIME,
+    extra = null
 ) {
     if (!extra) {
         extra = {};
@@ -317,7 +320,7 @@ export function generateSignature(
     } else {
         try {
             unixTimestampToDate(validUntil);
-        } catch(err) {
+        } catch (err) {
             return null;
         }
     }
@@ -347,30 +350,39 @@ export function generateSignature(
  * @param {string|number|null} validUntil
  * @param {number} lifetime
  * @param {Object} extra
+ * @param {string} signatureParam
  * @param {string} authUserParam
+ * @param {string} validUntilParam
+ * @param {string} extraParam
  * @returns {{}}
  */
 export function signatureToDict(
     authUser,
     secretKey,
-    validUntil=null,
-    lifetime=SIGNATURE_LIFETIME,
-    extra=null,
-    authUserParam=DEFAULT_AUTH_USER_PARAM
+    validUntil = null,
+    lifetime = SIGNATURE_LIFETIME,
+    extra = null,
+    signatureParam = DEFAULT_SIGNATURE_PARAM,
+    authUserParam = DEFAULT_AUTH_USER_PARAM,
+    validUntilParam = DEFAULT_VALID_UNTIL_PARAM,
+    extraParam = DEFAULT_EXTRA_PARAM,
 ) {
     let signature = generateSignature(
-        authUser=authUser,
-        secretKey=secretKey,
-        validUntil=validUntil,
-        lifetime=lifetime,
-        extra=extra,
+        authUser,
+        secretKey,
+        validUntil,
+        lifetime,
+        extra,
     )
 
     const requestHelper = new RequestHelper(
-        authUserParam=authUserParam
+        signatureParam,
+        authUserParam,
+        validUntilParam,
+        extraParam,
     );
 
-    let signatureDict = requestHelper.signatureToDict(signature=signature);
+    let signatureDict = requestHelper.signatureToDict(signature);
 
     return signatureDict;
 }
