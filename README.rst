@@ -156,19 +156,7 @@ Simply type:
 
 .. code-block:: sh
 
-    pytest
-
-Or use tox:
-
-.. code-block:: sh
-
-    tox
-
-Or use tox to check specific env:
-
-.. code-block:: sh
-
-    tox -e py39
+    npm test
 
 Writing documentation
 =====================
