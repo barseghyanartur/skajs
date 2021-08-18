@@ -180,7 +180,7 @@ MIT
 
 Support
 =======
-For any issues contact me at the e-mail given in the `Author`_ section.
+For any issues contact me at the e-mail given in the [Author](#Author) section.
 
 Author
 ======
