@@ -332,12 +332,18 @@ const validSignatureDict = signatureToDict(
     DEFAULT_SIGNATURE_PARAM,
     "webshop_id"
 );
-let _updatedPayload = "";
+let payloadCopy = JSON.parse(JSON.stringify(PAYLOAD));
 let updatedPayload = {
-    ..._updatedPayload,
+    ...payloadCopy,
     ...validSignatureDict,
 };
 const isValidRequestData = validateSignedRequestData(
     updatedPayload,
-    SECRET_KEY
+    SECRET_KEY,
+    DEFAULT_SIGNATURE_PARAM,
+    "webshop_id"
 );
+console.log("\n === \n isValidRequestData \n === \n");
+console.log("\n === \n isValidRequestData::updatedPayload \n === \n");
+console.log(updatedPayload);
+console.log(isValidRequestData);

@@ -65,7 +65,7 @@ Required imports.
 
 .. code-block:: javascript
 
-    import {signatureToDict} from 'ska';
+    import { signatureToDict } from 'skajs';
 
 Producing a signed URL.
 
@@ -143,7 +143,7 @@ Required imports.
 
 .. code-block:: python
 
-    import {validateSignedRequestData} from 'skajs'
+    import { validateSignedRequestData } from 'skajs'
 
 Validating the signed request data. Note, that ``data`` value is expected to
 be a dictionary; ``request.GET`` is given as an example. It will most likely
