@@ -49,6 +49,12 @@ Latest stable version from PyPI:
 
 Usage examples
 ==============
+Some of the example are listed in the examples.js file. Run them as follows:
+
+.. code-block:: sh
+
+    node examples.js
+
 Basic usage
 -----------
 Sender side
@@ -59,7 +65,7 @@ Required imports.
 
 .. code-block:: javascript
 
-    import {signatureToDict} from 'ska';
+    import { signatureToDict } from 'skajs';
 
 Producing a signed URL.
 
@@ -137,7 +143,7 @@ Required imports.
 
 .. code-block:: python
 
-    import {validateSignedRequestData} from 'skajs'
+    import { validateSignedRequestData } from 'skajs'
 
 Validating the signed request data. Note, that ``data`` value is expected to
 be a dictionary; ``request.GET`` is given as an example. It will most likely
@@ -156,19 +162,14 @@ Simply type:
 
 .. code-block:: sh
 
-    pytest
+    npm test
 
-Or use tox:
-
-.. code-block:: sh
-
-    tox
-
-Or use tox to check specific env:
+Code style
+==========
 
 .. code-block:: sh
 
-    tox -e py39
+    npx prettier --write .
 
 Writing documentation
 =====================
