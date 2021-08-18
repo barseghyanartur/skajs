@@ -1,46 +1,46 @@
 {
-	"name": "skajs",
-	"version": "0.0.1",
-	"description": "Sort the keys of an object",
-	"license": "MIT",
-	"repository": "barseghyanartur/skajs",
-	"author": {
-		"name": "Artur Barseghyan",
-		"email": "artur.barseghyan@gmail.com",
-		"url": "https://github.com/barseghyanartur/"
-	},
-	"type": "module",
-	"exports": "./index.js",
-	"engines": {
-		"node": ">=12"
-	},
-	"scripts": {
-		"test": "ava && tsd"
-	},
-	"files": [
-		"index.js"
-	],
-	"keywords": [
-		"sort",
-		"object",
-		"keys",
-		"key",
-		"stable",
-		"deterministic",
-		"deep",
-		"recursive",
-		"recursively",
-		"array",
-		"sorted",
-		"sorting"
-	],
-	"dependencies": {
-		"is-obj": "^3.0.0"
-	},
-	"devDependencies": {
-		"ava": "^3.15.0",
-		"prettier": "2.3.2",
-		"tsd": "^0.14.0",
-		"xo": "^0.38.2"
-	}
+    "name": "skajs",
+    "version": "0.0.1",
+    "description": "Sort the keys of an object",
+    "license": "MIT",
+    "repository": "barseghyanartur/skajs",
+    "author": {
+        "name": "Artur Barseghyan",
+        "email": "artur.barseghyan@gmail.com",
+        "url": "https://github.com/barseghyanartur/"
+    },
+    "type": "module",
+    "exports": "./index.js",
+    "engines": {
+        "node": ">=12"
+    },
+    "scripts": {
+        "test": "ava && tsd"
+    },
+    "files": [
+        "index.js"
+    ],
+    "keywords": [
+        "sort",
+        "object",
+        "keys",
+        "key",
+        "stable",
+        "deterministic",
+        "deep",
+        "recursive",
+        "recursively",
+        "array",
+        "sorted",
+        "sorting"
+    ],
+    "dependencies": {
+        "is-obj": "^3.0.0"
+    },
+    "devDependencies": {
+        "ava": "^3.15.0",
+        "prettier": "2.3.2",
+        "tsd": "^0.14.0",
+        "xo": "^0.38.2"
+    }
 }

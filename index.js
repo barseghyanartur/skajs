@@ -1,5 +1,5 @@
 // const crypto = require('crypto');
-import {createHmac} from 'crypto';
+import { createHmac } from "crypto";
 
 /**
  * *******************************************
@@ -11,7 +11,6 @@ import {createHmac} from 'crypto';
  * Signature lifetime in seconds.
  */
 export const SIGNATURE_LIFETIME = 600;
-
 
 /**
  * Default name of the REQUEST param holding the generated signature value.
@@ -33,7 +32,6 @@ export const DEFAULT_VALID_UNTIL_PARAM = "valid_until";
  */
 export const DEFAULT_EXTRA_PARAM = "extra";
 
-
 /**
  * *******************************************
  * *************** Helpers *****************
@@ -47,7 +45,7 @@ export const DEFAULT_EXTRA_PARAM = "extra";
  * @returns {boolean}
  */
 export function isObject(value) {
-    return value && typeof value === 'object' && value.constructor === Object;
+    return value && typeof value === "object" && value.constructor === Object;
 }
 
 /**
@@ -57,12 +55,16 @@ export function isObject(value) {
  * @returns {string}
  */
 export function toString(value) {
-    return Object.entries(value).reduce((a, e) => {
-        if (typeof e[1] != "function") {
-            a += `'${e[0]}': '${e[1]}', `;
-        }
-        return a;
-    }, "{").slice(1, -2) + "}";
+    return (
+        Object.entries(value)
+            .reduce((a, e) => {
+                if (typeof e[1] != "function") {
+                    a += `'${e[0]}': '${e[1]}', `;
+                }
+                return a;
+            }, "{")
+            .slice(1, -2) + "}"
+    );
 }
 
 /**
@@ -96,14 +98,17 @@ export function sortedURLEncode(data, quoted = true) {
  * @returns {{}|*}
  */
 export function dictToOrderedDict(value) {
-    if (typeof value !== 'object' || !value)
-        return value;
-    if (Array.isArray(value))
-        return value.map(dictToOrderedDict);
-    return Object.keys(value).sort().reduce((o, k) => ({
-        ...o,
-        [k]: dictToOrderedDict(value[k])
-    }), {});
+    if (typeof value !== "object" || !value) return value;
+    if (Array.isArray(value)) return value.map(dictToOrderedDict);
+    return Object.keys(value)
+        .sort()
+        .reduce(
+            (o, k) => ({
+                ...o,
+                [k]: dictToOrderedDict(value[k]),
+            }),
+            {}
+        );
 }
 
 /**
@@ -172,7 +177,6 @@ export class Signature {
     }
 }
 
-
 /**
  * *******************************************
  * ****************** Utils ******************
@@ -195,10 +199,10 @@ export class RequestHelper {
         signatureParam = DEFAULT_SIGNATURE_PARAM,
         authUserParam = DEFAULT_AUTH_USER_PARAM,
         validUntilParam = DEFAULT_VALID_UNTIL_PARAM,
-        extraParam = DEFAULT_EXTRA_PARAM,
+        extraParam = DEFAULT_EXTRA_PARAM
     ) {
-        this.signatureParam = DEFAULT_SIGNATURE_PARAM,
-            this.authUserParam = authUserParam;
+        this.signatureParam = DEFAULT_SIGNATURE_PARAM;
+        this.authUserParam = authUserParam;
         this.validUntilParam = validUntilParam;
         this.extraParam = extraParam;
     }
@@ -219,20 +223,18 @@ export class RequestHelper {
 
         let combined = {
             ...data,
-            ...signature.extra
+            ...signature.extra,
         };
 
         return combined;
     }
 }
 
-
 /**
  * *******************************************
  * ************* Borrowed from classes *******
  * *******************************************
  */
-
 
 /**
  * Convert unix timestamp to date.
@@ -243,7 +245,6 @@ export class RequestHelper {
 export function unixTimestampToDate(validUntil) {
     return new Date(validUntil * 1000);
 }
-
 
 /**
  * Make a secret key.
@@ -272,7 +273,6 @@ export function getBase(authUser, validUntil, extra = null) {
     return _base.join("_");
 }
 
-
 /**
  * Make hash.
  *
@@ -287,12 +287,11 @@ export function makeHash(authUser, secretKey, validUntil = null, extra = null) {
         extra = {};
     }
 
-    let _base = getBase(authUser, validUntil, extra = extra);
-    let rawHmac = createHmac('sha1', secretKey);
+    let _base = getBase(authUser, validUntil, (extra = extra));
+    let rawHmac = createHmac("sha1", secretKey);
     rawHmac.update(_base);
     return rawHmac.digest();
 }
-
 
 /**
  * Generate signature.
@@ -325,22 +324,14 @@ export function generateSignature(
         }
     }
 
-    let hash = makeHash(
-        authUser, secretKey, validUntil, extra
-    );
+    let hash = makeHash(authUser, secretKey, validUntil, extra);
 
     let buff = new Buffer(hash);
 
-    let signature = buff.toString('base64');
+    let signature = buff.toString("base64");
 
-    return new Signature(
-        signature,
-        authUser,
-        validUntil,
-        extra,
-    );
+    return new Signature(signature, authUser, validUntil, extra);
 }
-
 
 /**
  * Signature to dict.
@@ -365,24 +356,22 @@ export function signatureToDict(
     signatureParam = DEFAULT_SIGNATURE_PARAM,
     authUserParam = DEFAULT_AUTH_USER_PARAM,
     validUntilParam = DEFAULT_VALID_UNTIL_PARAM,
-    extraParam = DEFAULT_EXTRA_PARAM,
+    extraParam = DEFAULT_EXTRA_PARAM
 ) {
     let signature = generateSignature(
         authUser,
         secretKey,
         validUntil,
         lifetime,
-        extra,
-    )
+        extra
+    );
 
     const requestHelper = new RequestHelper(
         signatureParam,
         authUserParam,
         validUntilParam,
-        extraParam,
+        extraParam
     );
 
-    let signatureDict = requestHelper.signatureToDict(signature);
-
-    return signatureDict;
+    return requestHelper.signatureToDict(signature);
 }
