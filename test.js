@@ -13,6 +13,7 @@ import {
     extractSignedData,
     makeValidUntil,
     validateSignature,
+    DEFAULT_SIGNATURE_PARAM,
 } from "./index.js";
 // import {getSignatureData} from "./examples";
 
@@ -459,12 +460,11 @@ test("Test signatureToDict", (t) => {
         validUntil,
         SIGNATURE_LIFETIME,
         SIGNATURE_DATA,
+        DEFAULT_SIGNATURE_PARAM,
         "webshop_id"
     );
-
     const expectedSignatureDict = {
         signature: "+r9u8ztA7oEe9mTGMxKDVJ/8Sec=",
-        auth_user: "4381a041-11cd-43fa-9fb4-c558bac1bd5e",
         valid_until: "1628717009.0",
         extra: "amount,billing,company,currency,order_id,order_lines,shipping,user,webshop_id",
         order_lines: [
@@ -558,28 +558,26 @@ test("Test signatureToDict", (t) => {
             country: "NL",
         },
     };
-
     t.deepEqual(signatureDict, expectedSignatureDict);
 
     // Test case 2
-
     const signatureDict2 = signatureToDict(
         PAYLOAD["webshop_id"],
         SECRET_KEY,
         validUntil,
         SIGNATURE_LIFETIME,
         { 1: "1", 2: "2" },
+        DEFAULT_SIGNATURE_PARAM,
         "webshop_id"
     );
     const expectedSignatureDict2 = {
         1: "1",
         2: "2",
         signature: "a0Bh5XMWBrLtnfy49fZBUKZxzZ0=",
-        auth_user: "4381a041-11cd-43fa-9fb4-c558bac1bd5e",
+        webshop_id: "4381a041-11cd-43fa-9fb4-c558bac1bd5e",
         valid_until: "1628717009.0",
         extra: "1,2",
     };
-
     t.deepEqual(signatureDict2, expectedSignatureDict2);
 });
 
@@ -700,6 +698,7 @@ test("Test extractSignedData", (t) => {
         validUntil,
         SIGNATURE_LIFETIME,
         SIGNATURE_DATA,
+        DEFAULT_SIGNATURE_PARAM,
         "webshop_id"
     );
     const extractedSignedData = extractSignedData(

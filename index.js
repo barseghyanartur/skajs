@@ -483,5 +483,5 @@ export function validateSignedRequestData(
         extraParam
     );
 
-    const validationResult = requestHelper.validateRequestData(data, secretKey);
+    return requestHelper.validateRequestData(data, secretKey);
 }

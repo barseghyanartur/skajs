@@ -10,6 +10,8 @@ import {
     extractSignedData,
     validateSignature,
     makeValidUntil,
+    validateSignedRequestData,
+    DEFAULT_SIGNATURE_PARAM,
 } from "./index.js";
 
 /**
@@ -255,6 +257,7 @@ const signatureDict = signatureToDict(
     validUntil,
     SIGNATURE_LIFETIME,
     SIGNATURE_DATA,
+    DEFAULT_SIGNATURE_PARAM,
     "webshop_id"
 );
 
@@ -267,6 +270,7 @@ const signatureDict2 = signatureToDict(
     validUntil,
     SIGNATURE_LIFETIME,
     { 1: "1", 2: "2" },
+    DEFAULT_SIGNATURE_PARAM,
     "webshop_id"
 );
 
@@ -318,3 +322,22 @@ const isValidSignature = validateSignature(
 );
 console.log("\n === \n isValidSignature \n === \n");
 console.log(isValidSignature);
+
+const validSignatureDict = signatureToDict(
+    PAYLOAD["webshop_id"],
+    SECRET_KEY,
+    makeValidUntil(),
+    SIGNATURE_LIFETIME,
+    SIGNATURE_DATA,
+    DEFAULT_SIGNATURE_PARAM,
+    "webshop_id"
+);
+let _updatedPayload = "";
+let updatedPayload = {
+    ..._updatedPayload,
+    ...validSignatureDict,
+};
+const isValidRequestData = validateSignedRequestData(
+    updatedPayload,
+    SECRET_KEY
+);
