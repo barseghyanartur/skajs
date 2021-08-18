@@ -344,7 +344,7 @@ export function generateSignature(
  *
  * @param {string} authUser
  * @param {string} secretKey
- * @param {string|number} validUntil
+ * @param {string|number|null} validUntil
  * @param {number} lifetime
  * @param {Object} extra
  * @param {string} authUserParam
