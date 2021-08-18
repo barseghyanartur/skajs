@@ -81,9 +81,9 @@ Sample output:
 
 ```json
 {
-    'signature': 'YlZpLFsjUKBalL4x5trhkeEgqE8=',
-    'auth_user': 'user',
-    'valid_until': '1378045287.0'
+    "signature": "YlZpLFsjUKBalL4x5trhkeEgqE8=",
+    "auth_user": "user",
+    "valid_until": "1378045287.0"
 }
 ```
 
@@ -125,15 +125,15 @@ signature_dict = signatureToDict(
 
 Sample output:
 
-```javascript
+```json
 {
-    'auth_user': 'user',
-    'email': 'john.doe@mail.example.com',
-    'extra': 'email,first_name,last_name',
-    'first_name': 'John',
-    'last_name': 'Doe',
-    'signature': 'cnSoU/LnJ/ZhfLtDLzab3a3gkug=',
-    'valid_until': 1387616469.0
+    "auth_user": "user",
+    "email": "john.doe@mail.example.com",
+    "extra": "email,first_name,last_name",
+    "first_name": "John",
+    "last_name": "Doe",
+    "signature": "cnSoU/LnJ/ZhfLtDLzab3a3gkug=",
+    "valid_until": 1387616469.0
 }
 ```
 
@@ -153,7 +153,7 @@ vary from what's used in your framework (unless you use Django).
 
 ```javascript
 validationResult = validateSignedRequestData(
-    request.GET,  # Note, that ``request.GET`` is given as example.
+    request.GET,  // Note, that ``request.GET`` is given as example.
     'your-secret_key'
 )
 ```
