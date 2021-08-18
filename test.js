@@ -579,3 +579,112 @@ test("Test signatureToDict", (t) => {
 
     t.deepEqual(signatureDict2, expectedSignatureDict2);
 });
+
+test("Test getBase", (t) => {
+    // Test case 1
+    const base = getBase(AUTH_USER, validUntil, null);
+    const expectedBase = "1628717009.0_me@example.com";
+    t.is(base, expectedBase);
+
+    // Test case 2
+    const base2 = getBase(AUTH_USER, validUntil, { 1: "1", 2: "2" });
+    const expectedBase2 = "1628717009.0_me@example.com_1%3D1%262%3D2";
+    t.is(base2, expectedBase2);
+});
+
+test("Test dictToOrderedDict", (t) => {
+    const orderedPayload = dictToOrderedDict(PAYLOAD);
+    const expectedOrderedPayload = {
+        amount: 491605,
+        billing: {
+            city: "Ospel",
+            country: "NL",
+            house_number: "35",
+            postal_code: "6385 VA",
+            street: "Pippasteeg",
+        },
+        company: {
+            country: "NL",
+            name: "Siemens",
+            registration_number: "LhkvLTWNTVNxlMKfBruq",
+            vat_number: "RNQfPcPtnbDFvQRbJeNJ",
+            website: "https://www.nedschroef.com/",
+        },
+        currency: "EUR",
+        order_id: "lTAGlTOHtKiBdvRvmhSw",
+        order_lines: [
+            {
+                product_description:
+                    "Man movement another skill draw great late.",
+                product_id: "8273401260171",
+                product_name: "himself",
+                product_price_excl_tax: 7685,
+                product_price_incl_tax: 8684,
+                product_tax_rate_percentage: 13,
+                quantity: 4,
+            },
+            {
+                product_description:
+                    "Including couple happen ago hotel son know list.",
+                product_id: "6760122207575",
+                product_name: "someone",
+                product_price_excl_tax: 19293,
+                product_price_incl_tax: 20064,
+                product_tax_rate_percentage: 4,
+                quantity: 5,
+            },
+            {
+                product_description: "Simply reason bring manager with lot.",
+                product_id: "5014352615527",
+                product_name: "able",
+                product_price_excl_tax: 39538,
+                product_price_incl_tax: 41910,
+                product_tax_rate_percentage: 6,
+                quantity: 1,
+            },
+            {
+                product_description:
+                    "Arrive government such arm conference program every.",
+                product_id: "4666517682328",
+                product_name: "person",
+                product_price_excl_tax: 18794,
+                product_price_incl_tax: 18794,
+                product_tax_rate_percentage: 0,
+                quantity: 1,
+            },
+            {
+                product_description: "Ever campaign next store far stop and.",
+                product_id: "3428396033957",
+                product_name: "chance",
+                product_price_excl_tax: 26894,
+                product_price_incl_tax: 29314,
+                product_tax_rate_percentage: 9,
+                quantity: 2,
+            },
+            {
+                product_description: "Song any season pick box chance.",
+                product_id: "4822589619741",
+                product_name: "style",
+                product_price_excl_tax: 17037,
+                product_price_incl_tax: 19422,
+                product_tax_rate_percentage: 14,
+                quantity: 4,
+            },
+        ],
+        shipping: {
+            city: "Noord-Sleen",
+            country: "NL",
+            house_number: "7",
+            postal_code: "1784KL",
+            street: "Femkeboulevard",
+        },
+        user: {
+            email: "juliegoyaerts-van-waderle@gmail.com",
+            first_name: "Noor",
+            last_name: "van Praagh",
+            phone_number: "+31475013353",
+        },
+        webshop_id: "4381a041-11cd-43fa-9fb4-c558bac1bd5e",
+    };
+    t.deepEqual(orderedPayload, expectedOrderedPayload);
+});
