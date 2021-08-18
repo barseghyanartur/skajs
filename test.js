@@ -14,6 +14,7 @@ import {
     makeValidUntil,
     validateSignature,
     DEFAULT_SIGNATURE_PARAM,
+    validateSignedRequestData,
 } from "./index.js";
 // import {getSignatureData} from "./examples";
 
@@ -835,4 +836,29 @@ test("Test validateSignature", (t) => {
     );
     t.is(isValidSignature2, false);
     t.is(signature2.isExpired(), true);
+});
+
+test("Test validateSignedRequestData", (t) => {
+    // Test case 1 - valid non-expired signature
+    const validSignatureDict = signatureToDict(
+        PAYLOAD["webshop_id"],
+        SECRET_KEY,
+        makeValidUntil(),
+        SIGNATURE_LIFETIME,
+        SIGNATURE_DATA,
+        DEFAULT_SIGNATURE_PARAM,
+        "webshop_id"
+    );
+    let payloadCopy = JSON.parse(JSON.stringify(PAYLOAD));
+    let updatedPayload = {
+        ...payloadCopy,
+        ...validSignatureDict,
+    };
+    const isValidRequestData = validateSignedRequestData(
+        updatedPayload,
+        SECRET_KEY,
+        DEFAULT_SIGNATURE_PARAM,
+        "webshop_id"
+    );
+    t.is(isValidRequestData, true);
 });
