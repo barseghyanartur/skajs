@@ -21,6 +21,12 @@
     "scripts": {
         "test": "ava"
     },
+    "ava": {
+        "files": [
+			"test.js",
+            "esm/test.mjs"
+        ]
+    },
     "keywords": [
         "sign data",
         "sign (HTTP) request",
