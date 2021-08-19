@@ -1,5 +1,7 @@
-// const crypto = require('crypto');
-import { createHmac } from "crypto";
+const crypto = require('crypto');
+const createHmac = crypto.createHmac
+
+// import { createHmac } from "crypto";
 
 /**
  * *******************************************
@@ -10,27 +12,27 @@ import { createHmac } from "crypto";
 /**
  * Signature lifetime in seconds.
  */
-export const SIGNATURE_LIFETIME = 600;
+const SIGNATURE_LIFETIME = 600;
 
 /**
  * Default name of the REQUEST param holding the generated signature value.
  */
-export const DEFAULT_SIGNATURE_PARAM = "signature";
+const DEFAULT_SIGNATURE_PARAM = "signature";
 
 /**
  * Default auth_user param.
  */
-export const DEFAULT_AUTH_USER_PARAM = "auth_user";
+const DEFAULT_AUTH_USER_PARAM = "auth_user";
 
 /**
  * Default name of the REQUEST param holding the ``valid_until`` value.
  */
-export const DEFAULT_VALID_UNTIL_PARAM = "valid_until";
+const DEFAULT_VALID_UNTIL_PARAM = "valid_until";
 
 /**
  * Default name of the REQUEST param holding the ``extra`` value.
  */
-export const DEFAULT_EXTRA_PARAM = "extra";
+const DEFAULT_EXTRA_PARAM = "extra";
 
 /**
  * *******************************************
@@ -44,7 +46,7 @@ export const DEFAULT_EXTRA_PARAM = "extra";
  * @param {Object} value
  * @returns {boolean}
  */
-export function isObject(value) {
+function isObject(value) {
     return value && typeof value === "object" && value.constructor === Object;
 }
 
@@ -54,7 +56,7 @@ export function isObject(value) {
  * @param {Object} value
  * @returns {string}
  */
-export function toString(value) {
+function toString(value) {
     return (
         Object.entries(value)
             .reduce((a, e) => {
@@ -74,7 +76,7 @@ export function toString(value) {
  * @param {boolean} quoted
  * @returns {string}
  */
-export function sortedURLEncode(data, quoted = true) {
+function sortedURLEncode(data, quoted = true) {
     let orderedData = dictToOrderedDict(data);
     let _sorted = [];
     for (const [key, value] of Object.entries(orderedData)) {
@@ -97,7 +99,7 @@ export function sortedURLEncode(data, quoted = true) {
  * @param {Object} value
  * @returns {{}|*}
  */
-export function dictToOrderedDict(value) {
+function dictToOrderedDict(value) {
     if (typeof value !== "object" || !value) return value;
     if (Array.isArray(value)) return value.map(dictToOrderedDict);
     return Object.keys(value)
@@ -117,7 +119,7 @@ export function dictToOrderedDict(value) {
  * @param {number} lifetime
  * @returns {number}
  */
-export function makeValidUntil(lifetime = SIGNATURE_LIFETIME) {
+function makeValidUntil(lifetime = SIGNATURE_LIFETIME) {
     let validUntil = new Date();
     validUntil.setSeconds(validUntil.getSeconds() + lifetime);
     return validUntil / 1000;
@@ -130,7 +132,7 @@ export function makeValidUntil(lifetime = SIGNATURE_LIFETIME) {
  * @param {boolean} returnString
  * @returns {string|string[]}
  */
-export function dictKeys(dict, returnString = false) {
+function dictKeys(dict, returnString = false) {
     let keys = Object.keys(dict);
     keys.sort();
     if (returnString) {
@@ -146,7 +148,7 @@ export function dictKeys(dict, returnString = false) {
  * @param {Array} extra
  * @returns {Object}
  */
-export function extractSignedData(data, extra) {
+function extractSignedData(data, extra) {
     let dataCopy = JSON.parse(JSON.stringify(data));
     for (const [key, value] of Object.entries(dataCopy)) {
         if (extra.indexOf(key) < 0) {
@@ -165,7 +167,7 @@ export function extractSignedData(data, extra) {
 /**
  * Signature.
  */
-export class Signature {
+class Signature {
     /**
      * Constructor.
      *
@@ -205,7 +207,7 @@ export class Signature {
  * @param {boolean} returnObject
  * @returns {boolean}
  */
-export function validateSignature(
+function validateSignature(
     signature,
     authUser,
     secretKey,
@@ -239,7 +241,7 @@ export function validateSignature(
 /**
  * Request helper.
  */
-export class RequestHelper {
+class RequestHelper {
     /**
      * Constructor.
      *
@@ -320,7 +322,7 @@ export class RequestHelper {
  * @param {string|number} validUntil
  * @returns {Date}
  */
-export function unixTimestampToDate(validUntil) {
+function unixTimestampToDate(validUntil) {
     return new Date(validUntil * 1000);
 }
 
@@ -332,7 +334,7 @@ export function unixTimestampToDate(validUntil) {
  * @param {Object} extra
  * @returns {string}
  */
-export function getBase(authUser, validUntil, extra = null) {
+function getBase(authUser, validUntil, extra = null) {
     if (!extra) {
         extra = {};
     }
@@ -360,7 +362,7 @@ export function getBase(authUser, validUntil, extra = null) {
  * @param {Object} extra
  * @returns {Promise<ArrayBuffer>}
  */
-export function makeHash(authUser, secretKey, validUntil = null, extra = null) {
+function makeHash(authUser, secretKey, validUntil = null, extra = null) {
     if (!extra) {
         extra = {};
     }
@@ -381,7 +383,7 @@ export function makeHash(authUser, secretKey, validUntil = null, extra = null) {
  * @param {Object} extra
  * @returns {null|Signature}
  */
-export function generateSignature(
+function generateSignature(
     authUser,
     secretKey,
     validUntil = null,
@@ -425,7 +427,7 @@ export function generateSignature(
  * @param {string} extraParam
  * @returns {{}}
  */
-export function signatureToDict(
+function signatureToDict(
     authUser,
     secretKey,
     validUntil = null,
@@ -466,7 +468,7 @@ export function signatureToDict(
  * @param validate
  * @param failSilently
  */
-export function validateSignedRequestData(
+function validateSignedRequestData(
     data,
     secretKey,
     signatureParam = DEFAULT_SIGNATURE_PARAM,
@@ -485,3 +487,25 @@ export function validateSignedRequestData(
 
     return requestHelper.validateRequestData(data, secretKey);
 }
+
+exports.SIGNATURE_LIFETIME = SIGNATURE_LIFETIME;
+exports.SIGNATURE_LIFETIME = DEFAULT_SIGNATURE_PARAM;
+exports.DEFAULT_AUTH_USER_PARAM = DEFAULT_AUTH_USER_PARAM;
+exports.DEFAULT_VALID_UNTIL_PARAM = DEFAULT_VALID_UNTIL_PARAM;
+exports.DEFAULT_EXTRA_PARAM = DEFAULT_EXTRA_PARAM;
+exports.isObject = isObject;
+exports.toString = toString;
+exports.sortedURLEncode = sortedURLEncode;
+exports.dictToOrderedDict = dictToOrderedDict;
+exports.makeValidUntil = makeValidUntil;
+exports.dictKeys = dictKeys;
+exports.extractSignedData = extractSignedData;
+exports.Signature = Signature;
+exports.validateSignature = validateSignature;
+exports.RequestHelper = RequestHelper;
+exports.unixTimestampToDate = unixTimestampToDate;
+exports.getBase = getBase;
+exports.makeHash = makeHash;
+exports.generateSignature = generateSignature;
+exports.signatureToDict = signatureToDict;
+exports.validateSignedRequestData = validateSignedRequestData;

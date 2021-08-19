@@ -9,18 +9,17 @@
         "email": "artur.barseghyan@gmail.com",
         "url": "https://github.com/barseghyanartur/"
     },
-    "type": "commonjs",
-    "main": "./commonjs/index.js",
-    "exports": {
-        ".": "./commonjs/index.js"
-    },
-    "module": "./esm/index.mjs",
+    "type": "module",
+    "main": "./index.js",
     "engines": {
         "node": ">=12"
     },
     "scripts": {
         "test": "ava"
     },
+    "files": [
+        "index.js"
+    ],
     "keywords": [
         "sign data",
         "sign (HTTP) request",

@@ -47,10 +47,10 @@ npm install skajs
 ```
 
 ## Usage examples
-Some of the examples are listed in the ``examples.js`` file. Run them as follows:
+Some of the examples are listed in the ``examples.mjs`` file. Run them as follows:
 
 ```shell
-node examples.js
+node examples.mjs
 ```
 
 ### Basic usage
