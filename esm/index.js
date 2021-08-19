@@ -1,6 +1,3 @@
-// const crypto = require('crypto');
-// const createHmac = crypto.createHmac
-
 import { createHmac } from "crypto";
 
 /**

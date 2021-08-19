@@ -1,5 +1,5 @@
-const test = require('ava');
-const {
+import test from 'ava';
+import {
     SIGNATURE_LIFETIME,
     getBase,
     sortedURLEncode,
@@ -15,8 +15,7 @@ const {
     validateSignature,
     DEFAULT_SIGNATURE_PARAM,
     validateSignedRequestData,
-} = require('./commonjs/index.js');
-// import {getSignatureData} from "./examples";
+} from './index.js';
 
 /**
  * Helper functions for testing.

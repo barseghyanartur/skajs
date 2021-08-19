@@ -47,7 +47,15 @@ npm install skajs
 ```
 
 ## Usage examples
-Some of the examples are listed in the ``examples.mjs`` file. Run them as follows:
+Some examples are listed in the ``examples.mjs`` file.
+
+### CommonJS
+
+```shell
+node examples.js
+```
+
+### ESM
 
 ```shell
 node examples.mjs
@@ -59,13 +67,21 @@ node examples.mjs
 
 Signing dictionaries is as simple as follows.
 
-Required imports.
+##### Required imports.
+
+**CommonJS**
+
+```javascript
+const { signatureToDict } = require('skajs');
+```
+
+**ESM**
 
 ```javascript
 import { signatureToDict } from 'skajs';
 ```
 
-Signing data:
+##### Sign data
 
 ```javascript
 const signatureDict = signatureToDict(
@@ -141,11 +157,21 @@ Sample output:
 
 Validating the signed request data is as simple as follows.
 
-Required imports.
+##### Required imports
+
+**CommonJS**
 
 ```javascript
-import { validateSignedRequestData } from 'skajs'
+const { validateSignedRequestData } = require('skajs');
 ```
+
+**ESM**
+
+```javascript
+import { validateSignedRequestData } from 'skajs';
+```
+
+##### Validate signed requests
 
 Validating the signed request data. Note, that ``data`` value is expected to
 be a dictionary; ``request.GET`` is given as an example. It will most likely
