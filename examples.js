@@ -1,4 +1,5 @@
 const {
+    SIGNATURE_LIFETIME,
     getBase,
     sortedURLEncode,
     dictToOrderedDict,
@@ -10,7 +11,6 @@ const {
     validateSignature,
     makeValidUntil,
     validateSignedRequestData,
-    SIGNATURE_LIFETIME,
     DEFAULT_SIGNATURE_PARAM
 } = require('skajs');
 
