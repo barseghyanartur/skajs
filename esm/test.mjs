@@ -1,4 +1,4 @@
-import test from 'ava';
+import test from "ava";
 import {
     SIGNATURE_LIFETIME,
     getBase,
@@ -15,7 +15,7 @@ import {
     validateSignature,
     DEFAULT_SIGNATURE_PARAM,
     validateSignedRequestData,
-} from './index.js';
+} from "./index.js";
 
 /**
  * Helper functions for testing.

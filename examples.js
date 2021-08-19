@@ -11,8 +11,8 @@ const {
     validateSignature,
     makeValidUntil,
     validateSignedRequestData,
-    DEFAULT_SIGNATURE_PARAM
-} = require('skajs');
+    DEFAULT_SIGNATURE_PARAM,
+} = require("skajs");
 
 /**
  * Prepare a dictionary with data to sign.
