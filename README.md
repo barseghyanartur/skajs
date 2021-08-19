@@ -12,12 +12,12 @@ to sign data (requests). Secret key is never sent around.
 
 One of the cases is signing of HTTP requests. Each (HTTP) request is signed
 on the sender side using the shared Secret Key and as an outcome produces the
-triple (``signature``, ``auth_user``, ``valid_until``) which are used to sign
+triple (`signature`, `auth_user`, `valid_until`) which are used to sign
 the requests.
 
-- ``signature`` (``string``): Signature generated.
-- ``auth_user`` (``string``): User making the request. Can be anything.
-- ``valid_until`` (``float`` or ``string``): Signature expiration time (Unix timestamp).
+-   `signature` (`string`): Signature generated.
+-   `auth_user` (`string`): User making the request. Can be anything.
+-   `valid_until` (`float` or `string`): Signature expiration time (Unix timestamp).
 
 On the recipient side, (HTTP request) data is validated using the shared
 Secret Key. It's being checked whether signature is valid and not expired.
@@ -33,10 +33,10 @@ Secret Key. It's being checked whether signature is valid and not expired.
 
 ## Features
 
-- Sign dictionaries.
-- Validate signed dictionaries.
-- Sign URLs. Append and sign additional URL data.
-- Validate URLs.
+-   Sign dictionaries.
+-   Validate signed dictionaries.
+-   Sign URLs. Append and sign additional URL data.
+-   Validate URLs.
 
 ## Installation
 
@@ -47,7 +47,8 @@ npm install skajs
 ```
 
 ## Usage examples
-Some examples are listed in the ``examples.mjs`` file.
+
+Some examples are listed in the `examples.mjs` file.
 
 ### CommonJS
 
@@ -72,25 +73,22 @@ Signing dictionaries is as simple as follows.
 **CommonJS**
 
 ```javascript
-const { signatureToDict } = require('skajs');
+const { signatureToDict } = require("skajs");
 ```
 
 **ESM**
 
 ```javascript
-import { signatureToDict } from 'skajs';
+import { signatureToDict } from "skajs";
 ```
 
 ##### Sign data
 
 ```javascript
-const signatureDict = signatureToDict(
-    'user',
-    'your-secret_key',
-    null,
-    null,
-    {"1": "1", "2": "2"},
-)
+const signatureDict = signatureToDict("user", "your-secret_key", null, null, {
+    1: "1",
+    2: "2",
+});
 ```
 
 Sample output:
@@ -104,39 +102,33 @@ Sample output:
 ```
 
 Default lifetime of a signature is 10 minutes (600 seconds). If you want it
-to be different, provide a ``lifetime`` argument to ``signUrl`` function.
+to be different, provide a `lifetime` argument to `signUrl` function.
 
 Default name of the (GET) param holding the generated signature value
-is ``signature``. If you want it to be different, provide a ``signatureParam``
-argument to ``signatureToDict`` function.
+is `signature`. If you want it to be different, provide a `signatureParam`
+argument to `signatureToDict` function.
 
-Default name of the (GET) param holding the ``authUser`` value is
-``auth_user``. If you want it to be different, provide a ``authUserParam``
-argument to ``signatureToDict`` function.
+Default name of the (GET) param holding the `authUser` value is
+`auth_user`. If you want it to be different, provide a `authUserParam`
+argument to `signatureToDict` function.
 
-Default name of the (GET) param holding the ``validUntil`` value is
-`valid_until`. If you want it to be different, provide a ``validUntilParam``
-argument to ``signatureToDict`` function.
+Default name of the (GET) param holding the `validUntil` value is
+`valid_until`. If you want it to be different, provide a `validUntilParam`
+argument to `signatureToDict` function.
 
-Note, that by default a suffix '?' is added after the given ``url`` and
+Note, that by default a suffix '?' is added after the given `url` and
 generated signature params. If you want that suffix to be custom, provide a
-``suffix`` argument to the ``signatureToDict`` function. If you want it to be gone,
+`suffix` argument to the `signatureToDict` function. If you want it to be gone,
 set its' value to empty string.
 
 Adding of additional data to the signature works in the same way:
 
 ```javascript
-signature_dict = signatureToDict(
-    'user',
-    'your-secret_key',
-    null,
-    null,
-    {
-        'email': 'john.doe@mail.example.com',
-        'first_name': 'John',
-        'last_name': 'Doe'
-    }
-)
+signature_dict = signatureToDict("user", "your-secret_key", null, null, {
+    email: "john.doe@mail.example.com",
+    first_name: "John",
+    last_name: "Doe",
+});
 ```
 
 Sample output:
@@ -162,52 +154,52 @@ Validating the signed request data is as simple as follows.
 **CommonJS**
 
 ```javascript
-const { validateSignedRequestData } = require('skajs');
+const { validateSignedRequestData } = require("skajs");
 ```
 
 **ESM**
 
 ```javascript
-import { validateSignedRequestData } from 'skajs';
+import { validateSignedRequestData } from "skajs";
 ```
 
 ##### Validate signed requests
 
-Validating the signed request data. Note, that ``data`` value is expected to
-be a dictionary; ``request.GET`` is given as an example. It will most likely
+Validating the signed request data. Note, that `data` value is expected to
+be a dictionary; `request.GET` is given as an example. It will most likely
 vary from what's used in your framework (unless you use Django).
 
 ```javascript
 validationResult = validateSignedRequestData(
-    request.GET,  // Note, that ``request.GET`` is given as example.
-    'your-secret_key'
-)
+    request.GET, // Note, that ``request.GET`` is given as example.
+    "your-secret_key"
+);
 ```
 
-Testing
-=======
+# Testing
+
 Simply type:
 
 ```shell
 npm test
 ```
 
-Code style
-==========
-The ``Prettier`` is used.
+# Code style
+
+The `Prettier` is used.
 
 ```shell
 npx prettier --write .
 ```
 
-License
-=======
+# License
+
 MIT
 
-Support
-=======
+# Support
+
 For any issues contact me at the e-mail given in the [Author](#Author) section.
 
-Author
-======
+# Author
+
 Artur Barseghyan <artur.barseghyan@gmail.com>
