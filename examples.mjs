@@ -1,4 +1,4 @@
-const {
+import {
     SIGNATURE_LIFETIME,
     getBase,
     sortedURLEncode,
@@ -11,8 +11,8 @@ const {
     validateSignature,
     makeValidUntil,
     validateSignedRequestData,
-    DEFAULT_SIGNATURE_PARAM
-} = require('skajs');
+    DEFAULT_SIGNATURE_PARAM,
+} from "./esm/index.js";
 
 /**
  * Prepare a dictionary with data to sign.
@@ -20,7 +20,7 @@ const {
  * @param {Object} requestData
  * @returns {*}
  */
-function getSignatureData(requestData) {
+export function getSignatureData(requestData) {
     let signatureData = {};
     for (const [key, value] of Object.entries(requestData)) {
         if (SIGNATURE_DATA_KEYS.includes(key)) {

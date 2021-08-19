@@ -1,6 +1,6 @@
 {
     "name": "skajs",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Sign- and validate- data (dictionaries, strings) using symmetric-key algorithm.",
     "license": "MIT",
     "repository": "barseghyanartur/skajs",
@@ -9,17 +9,24 @@
         "email": "artur.barseghyan@gmail.com",
         "url": "https://github.com/barseghyanartur/"
     },
-    "type": "module",
-    "exports": "./index.js",
+    "type": "commonjs",
+    "main": "./commonjs/index.js",
+    "exports": {
+        ".": "./commonjs/index.js"
+    },
+    "module": "./esm/index.mjs",
     "engines": {
         "node": ">=12"
     },
     "scripts": {
         "test": "ava"
     },
-    "files": [
-        "index.js"
-    ],
+    "ava": {
+        "files": [
+			"test.js",
+            "esm/test.mjs"
+        ]
+    },
     "keywords": [
         "sign data",
         "sign (HTTP) request",
