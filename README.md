@@ -48,7 +48,7 @@ npm install skajs
 
 ## Usage examples
 
-Some examples are listed in the `examples.mjs` file.
+Usage example are present for both CommonJS and ESM.
 
 ### CommonJS
 
