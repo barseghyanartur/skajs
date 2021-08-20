@@ -114,12 +114,12 @@ export function dictToOrderedDict(value) {
  * Make a validUntil.
  *
  * @param {number} lifetime
- * @returns {number}
+ * @returns {string}
  */
 export function makeValidUntil(lifetime = SIGNATURE_LIFETIME) {
     let validUntil = new Date();
     validUntil.setSeconds(validUntil.getSeconds() + lifetime);
-    return validUntil / 1000;
+    return (validUntil / 1000).toFixed(1);
 }
 
 /**
