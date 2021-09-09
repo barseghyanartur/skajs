@@ -253,7 +253,7 @@ export class RequestHelper {
         validUntilParam = DEFAULT_VALID_UNTIL_PARAM,
         extraParam = DEFAULT_EXTRA_PARAM
     ) {
-        this.signatureParam = DEFAULT_SIGNATURE_PARAM;
+        this.signatureParam = signatureParam;
         this.authUserParam = authUserParam;
         this.validUntilParam = validUntilParam;
         this.extraParam = extraParam;
@@ -324,6 +324,15 @@ export function unixTimestampToDate(validUntil) {
 }
 
 /**
+ *
+ * @param {string|number} timestamp
+ * $returns {string}
+ */
+export function normalizeUnixTimestamp(timestamp) {
+    return parseFloat(timestamp).toFixed(1);
+}
+
+/**
  * Make a secret key.
  *
  * @param {string} authUser
@@ -336,7 +345,8 @@ export function getBase(authUser, validUntil, extra = null) {
         extra = {};
     }
 
-    validUntil = parseFloat(validUntil).toFixed(1);
+    // validUntil = parseFloat(validUntil).toFixed(1);
+    validUntil = normalizeUnixTimestamp(validUntil);
 
     let _base = [validUntil, authUser];
 
@@ -364,7 +374,7 @@ export function makeHash(authUser, secretKey, validUntil = null, extra = null) {
         extra = {};
     }
 
-    let _base = getBase(authUser, validUntil, (extra = extra));
+    let _base = getBase(authUser, validUntil, extra);
     let rawHmac = createHmac("sha1", secretKey);
     rawHmac.update(_base);
     return rawHmac.digest();
