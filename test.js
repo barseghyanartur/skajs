@@ -333,13 +333,13 @@ test("Test generateSignature", (t) => {
         SECRET_KEY,
         validUntil,
         SIGNATURE_LIFETIME,
-        { 1: "1", 2: "2" }
+        {"one": "1", "two": "2"}
     );
     const expectedSignature2 = new Signature(
-        "ZGncnzq0NlcMe2qMDqR02yfonR0=",
+        "dFqd/VbWOaY3ROlL89K6JZZsfhE=",
         "me@example.com",
         "1628717009.0",
-        { 1: "1", 2: "2" }
+        {"one": "1", "two": "2"}
     );
     t.deepEqual(signature2, expectedSignature2);
 
@@ -567,17 +567,17 @@ test("Test signatureToDict", (t) => {
         SECRET_KEY,
         validUntil,
         SIGNATURE_LIFETIME,
-        { 1: "1", 2: "2" },
+        {"one": "1", "two": "2"},
         DEFAULT_SIGNATURE_PARAM,
         "webshop_id"
     );
     const expectedSignatureDict2 = {
-        1: "1",
-        2: "2",
-        signature: "a0Bh5XMWBrLtnfy49fZBUKZxzZ0=",
+        "one": "1",
+        "two": "2",
+        signature: "Fg4s3QErL2GySta8VhNBXaaBSDM=",
         webshop_id: "4381a041-11cd-43fa-9fb4-c558bac1bd5e",
         valid_until: "1628717009.0",
-        extra: "1,2",
+        extra: "one,two",
     };
     t.deepEqual(signatureDict2, expectedSignatureDict2);
 });
@@ -589,8 +589,8 @@ test("Test getBase", (t) => {
     t.is(base, expectedBase);
 
     // Test case 2
-    const base2 = getBase(AUTH_USER, validUntil, { 1: "1", 2: "2" });
-    const expectedBase2 = "1628717009.0_me@example.com_1%3D1%262%3D2";
+    const base2 = getBase(AUTH_USER, validUntil, {"one": "1", "two": "2"});
+    const expectedBase2 = "1628717009.0_me@example.com_one%3D1%26two%3D2";
     t.is(base2, expectedBase2);
 });
 
