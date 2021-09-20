@@ -3,7 +3,7 @@
 Lets you easily sign data, using symmetric-key algorithm encryption. Allows
 you to validate signed data and identify possible validation errors. Uses
 sha/hmac for signature encryption. Comes with shortcut functions for signing (and
-validating) dictionaries and URLs.
+validating) dictionaries.
 
 ## Key concepts
 
@@ -105,8 +105,6 @@ const signatureDict = signatureToDict("user", "your-secret_key");
 const signatureDict = signatureToDict(
     "user",
     "your-secret_key",
-    null,
-    null,
     {
         "email": "john.doe@mail.example.com",
         "first_name": "John",
@@ -130,38 +128,44 @@ const signatureDict = signatureToDict(
 ```
 **Options and defaults:**
 
+The `signatureToDict` function accepts an optional `options` argument.
+
+Default value for the `validUntil` in the `options` is 10 minutes from now. If
+you want it to be different, set `validUntil` in the `options` of
+the `signatureToDict` function.
+
 Default lifetime of a signature is 10 minutes (600 seconds). If you want it
-to be different, provide a `lifetime` argument to `signatureToDict` function.
+to be different, set `lifetime` in the `options` of the `signatureToDict`
+function.
 
 Default name of the (GET) param holding the generated signature value
-is `signature`. If you want it to be different, provide a `signatureParam`
-argument to `signatureToDict` function.
+is `signature`. If you want it to be different,set the `signatureParam`
+in the `options` of the `signatureToDict` function.
 
 Default name of the (GET) param holding the `authUser` value is
-`auth_user`. If you want it to be different, provide a `authUserParam`
-argument to `signatureToDict` function.
+`auth_user`. If you want it to be different, set `authUserParam`
+in the `options` of the `signatureToDict` function.
 
 Default name of the (GET) param holding the `validUntil` value is
-`valid_until`. If you want it to be different, provide a `validUntilParam`
-argument to `signatureToDict` function.
+`valid_until`. If you want it to be different,  set the `validUntilParam`
+in the `options` of the `signatureToDict` function.
 
 Default name of the (GET) param holding the `extra` value is
-`extra`. If you want it to be different, provide a `extraParam`
-argument to `signatureToDict` function.
+`extra`. If you want it to be different, set the `extraParam`
+in the `ooptions` of the `signatureToDict` function.
 
 ```javascript
 signedData = signatureToDict(
     "user",
     "your-secret_key",
-    null,
-    null,
     {
         email: "john.doe@mail.example.com",
         first_name: "John",
         last_name: "Doe",
     },
-    DEFAULT_SIGNATURE_PARAM,
-    "webshop_id"
+    {
+        authUserParam: "webshop_id",
+    }
 );
 ```
 
@@ -225,8 +229,9 @@ With some customizations, it would look as follows:
 validationResult = validateSignedRequestData(
     request.GET,
     "your-secret_key",
-    DEFAULT_SIGNATURE_PARAM,
-    "webshop_id"
+    {
+        authUserParam: "webshop_id",
+    }
 );
 ```
 
