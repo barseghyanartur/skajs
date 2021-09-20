@@ -422,31 +422,60 @@ function generateSignature(
     return new Signature(signature, authUser, validUntil, extra);
 }
 
+
+/**
+ * Get defaults for signatureToDict function.
+ *
+ * @param {int|null} lifetime
+ * @return {Object}
+ */
+function getSignatureToDictDefaults(lifetime = null) {
+    // * @param {string|number|null} validUntil
+    // * @param {number} lifetime
+    // * @param {string} signatureParam
+    // * @param {string} authUserParam
+    // * @param {string} validUntilParam
+    // * @param {string} extraParam
+    if (!lifetime) {
+        lifetime = SIGNATURE_LIFETIME;
+    }
+    return {
+        validUntil: makeValidUntil(lifetime),
+        lifetime: lifetime,
+        signatureParam: DEFAULT_SIGNATURE_PARAM,
+        authUserParam: DEFAULT_AUTH_USER_PARAM,
+        validUntilParam: DEFAULT_VALID_UNTIL_PARAM,
+        extraParam: DEFAULT_EXTRA_PARAM,
+    };
+}
+
 /**
  * Signature to dict.
  *
  * @param {string} authUser
  * @param {string} secretKey
- * @param {string|number|null} validUntil
- * @param {number} lifetime
  * @param {Object} extra
- * @param {string} signatureParam
- * @param {string} authUserParam
- * @param {string} validUntilParam
- * @param {string} extraParam
+ * @param {Object} options
  * @returns {{}}
  */
 function signatureToDict(
     authUser,
     secretKey,
-    validUntil = null,
-    lifetime = SIGNATURE_LIFETIME,
     extra = null,
-    signatureParam = DEFAULT_SIGNATURE_PARAM,
-    authUserParam = DEFAULT_AUTH_USER_PARAM,
-    validUntilParam = DEFAULT_VALID_UNTIL_PARAM,
-    extraParam = DEFAULT_EXTRA_PARAM
+    options = {}
 ) {
+    let lifetime = options["lifetime"] ?? SIGNATURE_LIFETIME;
+    let defaults = getSignatureToDictDefaults(lifetime);
+    options = {
+        ...defaults,
+        ...options
+    };
+    let validUntil = options["validUntil"];
+    let signatureParam = options["signatureParam"];
+    let authUserParam = options["authUserParam"];
+    let validUntilParam = options["validUntilParam"];
+    let extraParam = options["extraParam"];
+
     let signature = generateSignature(
         authUser,
         secretKey,
