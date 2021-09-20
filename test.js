@@ -458,11 +458,13 @@ test("Test signatureToDict", (t) => {
     const signatureDict = signatureToDict(
         PAYLOAD["webshop_id"],
         SECRET_KEY,
-        validUntil,
-        SIGNATURE_LIFETIME,
         SIGNATURE_DATA,
-        DEFAULT_SIGNATURE_PARAM,
-        "webshop_id"
+        {
+            validUntil: validUntil,
+            lifetime: SIGNATURE_LIFETIME,
+            signatureParam: DEFAULT_SIGNATURE_PARAM,
+            authUserParam: "webshop_id",
+        }
     );
     const expectedSignatureDict = {
         signature: "+r9u8ztA7oEe9mTGMxKDVJ/8Sec=",
@@ -565,11 +567,13 @@ test("Test signatureToDict", (t) => {
     const signatureDict2 = signatureToDict(
         PAYLOAD["webshop_id"],
         SECRET_KEY,
-        validUntil,
-        SIGNATURE_LIFETIME,
         {"one": "1", "two": "2"},
-        DEFAULT_SIGNATURE_PARAM,
-        "webshop_id"
+        {
+            validUntil: validUntil,
+            lifetime: SIGNATURE_LIFETIME,
+            signatureParam: DEFAULT_SIGNATURE_PARAM,
+            authUserParam: "webshop_id",
+        },
     );
     const expectedSignatureDict2 = {
         "one": "1",
@@ -696,11 +700,14 @@ test("Test extractSignedData", (t) => {
     const signatureDict = signatureToDict(
         PAYLOAD["webshop_id"],
         SECRET_KEY,
-        validUntil,
-        SIGNATURE_LIFETIME,
         SIGNATURE_DATA,
-        DEFAULT_SIGNATURE_PARAM,
-        "webshop_id"
+        {
+            validUntil: validUntil,
+            lifetime: SIGNATURE_LIFETIME,
+            signatureParam: DEFAULT_SIGNATURE_PARAM,
+            authUserParam: "webshop_id",
+        },
+
     );
     const extractedSignedData = extractSignedData(
         signatureDict,
@@ -843,11 +850,14 @@ test("Test validateSignedRequestData", (t) => {
     const validSignatureDict = signatureToDict(
         PAYLOAD["webshop_id"],
         SECRET_KEY,
-        makeValidUntil(),
-        SIGNATURE_LIFETIME,
         SIGNATURE_DATA,
-        DEFAULT_SIGNATURE_PARAM,
-        "webshop_id"
+        {
+            validUntil: makeValidUntil(),
+            lifetime: SIGNATURE_LIFETIME,
+            signatureParam: DEFAULT_SIGNATURE_PARAM,
+            authUserParam: "webshop_id",
+        },
+
     );
     let payloadCopy = JSON.parse(JSON.stringify(PAYLOAD));
     let updatedPayload = {
@@ -857,8 +867,10 @@ test("Test validateSignedRequestData", (t) => {
     const isValidRequestData = validateSignedRequestData(
         updatedPayload,
         SECRET_KEY,
-        DEFAULT_SIGNATURE_PARAM,
-        "webshop_id"
+        {
+            signatureParam: DEFAULT_SIGNATURE_PARAM,
+            authUserParam: "webshop_id",
+        }
     );
     t.is(isValidRequestData, true);
 });
