@@ -67,38 +67,77 @@ function toString(value) {
 }
 
 /**
- * Sorted urlencode.
+ * Convert number to hex.
+ * @param value
+ * @returns {string}
+ */
+function convertNumberToHex(value) {
+   return "\\u" + ("00" + value.charCodeAt(0).toString(16)).slice(-4);
+}
+
+/**
+ * Encode special characters.
+ * @param value
+ * @return {*}
+ */
+function encodeValue(value) {
+    let encodedValue = "";
+    for (let i = 0; i < value.length; i++) {
+        if (value.codePointAt(i) > 127) {
+            encodedValue += convertNumberToHex(value[i]);
+        } else {
+            encodedValue += value.charAt(i);
+        }
+    }
+    encodedValue = encodedValue.replace("\\\\", "\\");
+    return encodedValue;
+}
+
+/**
+ * Default value dumper.
+ * @param value
+ * @returns {*}
+ */
+function defaultValueDumper(value) {
+    if (isObject(value) || Array.isArray(value)) {
+        return encodeValue(JSON.stringify(value));
+    }
+    return value;
+}
+
+/**
+ * Sorted `urlencode`.
  *
  * @param {Object} data
  * @param {boolean} quoted
+ * @param {Function} valueDumper
  * @returns {string}
  */
-function sortedURLEncode(data, quoted = true) {
+function sortedURLEncode(data, quoted = true, valueDumper = defaultValueDumper) {
     let orderedData = dictToOrderedDict(data);
     let _sorted = [];
     for (const [key, value] of Object.entries(orderedData)) {
-        if (isObject(value) || Array.isArray(value)) {
-            _sorted.push(`${key}=${JSON.stringify(value)}`);
-        } else {
-            _sorted.push(`${key}=${value}`);
-        }
+        _sorted.push(`${key}=${valueDumper(value)}`);
     }
     let _res = _sorted.join("&");
     if (quoted) {
         _res = encodeURIComponent(_res);
     }
-    return _res;
+    return _res.replace("\\\\", "\\").replace("%5C%5C", "%5C");
 }
 
 /**
  * Dict to ordered dict.
  *
  * @param {Object} value
+ * @param {Function} valueDumper
  * @returns {{}|*}
  */
 function dictToOrderedDict(value) {
     if (typeof value !== "object" || !value) return value;
-    if (Array.isArray(value)) return value.map(dictToOrderedDict);
+    if (Array.isArray(value)) {
+        return value.map(val => dictToOrderedDict(val));
+    }
     return Object.keys(value)
         .sort()
         .reduce(
@@ -202,6 +241,7 @@ class Signature {
  * @param {string|number} validUntil
  * @param {Object} extra
  * @param {boolean} returnObject
+ * @param {Function} valueDumper
  * @returns {boolean}
  */
 function validateSignature(
@@ -210,7 +250,8 @@ function validateSignature(
     secretKey,
     validUntil,
     extra = null,
-    returnObject = false
+    returnObject = false,
+    valueDumper = defaultValueDumper
 ) {
     if (!extra) {
         extra = {};
@@ -221,7 +262,8 @@ function validateSignature(
         secretKey,
         validUntil,
         SIGNATURE_LIFETIME,
-        extra
+        extra,
+        valueDumper
     );
 
     if (!returnObject) {
@@ -285,8 +327,9 @@ class RequestHelper {
      * Validate request data.
      * @param {Object} data
      * @param {string} secretKey
+     * @param {Function} valueDumper
      */
-    validateRequestData(data, secretKey) {
+    validateRequestData(data, secretKey, valueDumper = defaultValueDumper) {
         const signature = data[this.signatureParam];
         const authUser = data[this.authUserParam];
         const validUntil = data[this.validUntilParam];
@@ -302,7 +345,9 @@ class RequestHelper {
             authUser,
             secretKey,
             validUntil,
-            extraData
+            extraData,
+            false,
+            valueDumper
         );
     }
 }
@@ -340,9 +385,15 @@ function normalizeUnixTimestamp(timestamp) {
  * @param {string} authUser
  * @param {string|number} validUntil
  * @param {Object} extra
+ * @param {Function} valueDumper
  * @returns {string}
  */
-function getBase(authUser, validUntil, extra = null) {
+function getBase(
+    authUser,
+    validUntil,
+    extra = null,
+    valueDumper = defaultValueDumper
+) {
     if (!extra) {
         extra = {};
     }
@@ -353,7 +404,7 @@ function getBase(authUser, validUntil, extra = null) {
     let _base = [validUntil, authUser];
 
     if (extra) {
-        let urlencodedExtra = sortedURLEncode(extra);
+        let urlencodedExtra = sortedURLEncode(extra, true, valueDumper);
         if (urlencodedExtra) {
             _base.push(urlencodedExtra);
         }
@@ -369,14 +420,21 @@ function getBase(authUser, validUntil, extra = null) {
  * @param {string} secretKey
  * @param {string|number} validUntil
  * @param {Object} extra
+ * @param {Function} valueDumper
  * @returns {Promise<ArrayBuffer>}
  */
-function makeHash(authUser, secretKey, validUntil = null, extra = null) {
+function makeHash(
+    authUser,
+    secretKey,
+    validUntil = null,
+    extra = null,
+    valueDumper = defaultValueDumper
+) {
     if (!extra) {
         extra = {};
     }
 
-    let _base = getBase(authUser, validUntil, extra);
+    let _base = getBase(authUser, validUntil, extra, valueDumper);
     let rawHmac = createHmac("sha1", secretKey);
     rawHmac.update(_base);
     return rawHmac.digest();
@@ -390,6 +448,7 @@ function makeHash(authUser, secretKey, validUntil = null, extra = null) {
  * @param {string|number} validUntil
  * @param {number} lifetime
  * @param {Object} extra
+ * @param {Function} valueDumper
  * @returns {null|Signature}
  */
 function generateSignature(
@@ -397,7 +456,8 @@ function generateSignature(
     secretKey,
     validUntil = null,
     lifetime = SIGNATURE_LIFETIME,
-    extra = null
+    extra = null,
+    valueDumper = defaultValueDumper
 ) {
     if (!extra) {
         extra = {};
@@ -413,7 +473,7 @@ function generateSignature(
         }
     }
 
-    let hash = makeHash(authUser, secretKey, validUntil, extra);
+    let hash = makeHash(authUser, secretKey, validUntil, extra, valueDumper);
 
     let buff = new Buffer(hash);
 
@@ -436,6 +496,7 @@ function getSignatureToDictDefaults(lifetime = null) {
     // * @param {string} authUserParam
     // * @param {string} validUntilParam
     // * @param {string} extraParam
+    // * @param {string} valueDumper
     if (!lifetime) {
         lifetime = SIGNATURE_LIFETIME;
     }
@@ -446,6 +507,7 @@ function getSignatureToDictDefaults(lifetime = null) {
         authUserParam: DEFAULT_AUTH_USER_PARAM,
         validUntilParam: DEFAULT_VALID_UNTIL_PARAM,
         extraParam: DEFAULT_EXTRA_PARAM,
+        valueDumper: defaultValueDumper
     };
 }
 
@@ -475,13 +537,15 @@ function signatureToDict(
     let authUserParam = options["authUserParam"];
     let validUntilParam = options["validUntilParam"];
     let extraParam = options["extraParam"];
+    let valueDumper = options["valueDumper"];
 
     let signature = generateSignature(
         authUser,
         secretKey,
         validUntil,
         lifetime,
-        extra
+        extra,
+        valueDumper
     );
 
     const requestHelper = new RequestHelper(
@@ -501,11 +565,13 @@ function signatureToDict(
 // * @param authUserParam
 // * @param validUntilParam
 // * @param extraParam
+// * @param valueDumper
 const VALIDATE_SIGNED_REQUEST_DATA_DEFAULTS = {
     signatureParam: DEFAULT_SIGNATURE_PARAM,
     authUserParam: DEFAULT_AUTH_USER_PARAM,
     validUntilParam: DEFAULT_VALID_UNTIL_PARAM,
     extraParam: DEFAULT_EXTRA_PARAM,
+    valueDumper: defaultValueDumper
 }
 
 /**
@@ -532,6 +598,7 @@ function validateSignedRequestData(
     let authUserParam = options["authUserParam"];
     let validUntilParam = options["validUntilParam"];
     let extraParam = options["extraParam"];
+    let valueDumper = options["valueDumper"];
 
     const requestHelper = new RequestHelper(
         signatureParam,
@@ -540,7 +607,7 @@ function validateSignedRequestData(
         extraParam
     );
 
-    return requestHelper.validateRequestData(data, secretKey);
+    return requestHelper.validateRequestData(data, secretKey, valueDumper);
 }
 
 exports.SIGNATURE_LIFETIME = SIGNATURE_LIFETIME;
@@ -551,6 +618,9 @@ exports.DEFAULT_EXTRA_PARAM = DEFAULT_EXTRA_PARAM;
 exports.isObject = isObject;
 exports.toString = toString;
 exports.sortedURLEncode = sortedURLEncode;
+exports.convertNumberToHex = convertNumberToHex;
+exports.encodeValue = encodeValue;
+exports.defaultValueDumper = defaultValueDumper;
 exports.dictToOrderedDict = dictToOrderedDict;
 exports.makeValidUntil = makeValidUntil;
 exports.dictKeys = dictKeys;
