@@ -210,6 +210,47 @@ function extractSignedData(data, extra) {
  * *******************************************
  */
 
+class ErrorCode {
+
+    constructor(code, message)
+    {
+        this.code = code;
+        this.message = message;
+    }
+
+    toString() {
+        return this.message;
+    }
+}
+
+const INVALID_SIGNATURE = new ErrorCode(1, "Invalid signature!");
+const SIGNATURE_TIMESTAMP_EXPIRED = new ErrorCode(2, "Signature timestamp expired!");
+
+/**
+ * Signature validation result container.
+ */
+class SignatureValidationResult {
+    /**
+     * Constructor.
+     *
+     * @param {boolean} result
+     * @param {list} errors
+     */
+    constructor(result, errors) {
+        this.result = result;
+        this.errors = errors ?? [];
+    }
+
+    /**
+     * Human readable message of all errors.
+     *
+     * @returns {string}
+     */
+    message() {
+        return this.errors.join(" ");
+    }
+}
+
 /**
  * Signature.
  */
@@ -252,7 +293,7 @@ class Signature {
  * @param {Object} extra
  * @param {boolean} returnObject
  * @param {Function} valueDumper
- * @returns {boolean}
+ * @returns {boolean|SignatureValidationResult}
  */
 function validateSignature(
     signature,
@@ -279,6 +320,16 @@ function validateSignature(
     if (!returnObject) {
         return sig.signature === signature && !sig.isExpired();
     }
+
+    let result = sig.signature === signature && !sig.isExpired();
+    let errors = [];
+    if (sig.signature !== signature) {
+        errors.push(INVALID_SIGNATURE);
+    }
+    if (sig.isExpired()) {
+        errors.push(SIGNATURE_TIMESTAMP_EXPIRED);
+    }
+    return new SignatureValidationResult(result, errors);
 }
 
 /**
@@ -645,4 +696,8 @@ export {
     generateSignature,
     signatureToDict,
     validateSignedRequestData,
+    SignatureValidationResult,
+    ErrorCode,
+    INVALID_SIGNATURE,
+    SIGNATURE_TIMESTAMP_EXPIRED,
 };

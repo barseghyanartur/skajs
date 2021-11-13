@@ -332,14 +332,14 @@ test("Test dictKeys", (t) => {
 test("Test makeHash", (t) => {
     // Case 1
     let _hash = makeHash(AUTH_USER, SECRET_KEY, validUntil, {"one": "â"});
-    let buff = new Buffer(_hash);
+    let buff = Buffer.from(_hash);
     let hash = buff.toString("base64");
     const expectedHash = "dlT2WO/jYq7+xcvDEUkCnNW5TxA=";
     t.is(hash, expectedHash);
 
     // Case 2
     let _hash2 = makeHash(AUTH_USER, SECRET_KEY, validUntil, {"one": {"value": "â"}});
-    let buff2 = Buffer(_hash2);
+    let buff2 = Buffer.from(_hash2);
     let hash2 = buff2.toString("base64");
     const expectedHash2 = "+pA63D4EMF2pcfIlE/dYXyNkhx4=";
     t.is(hash2, expectedHash2);
