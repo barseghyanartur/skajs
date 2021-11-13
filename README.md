@@ -5,6 +5,14 @@ you to validate signed data and identify possible validation errors. Uses
 sha/hmac for signature encryption. Comes with shortcut functions for signing (and
 validating) dictionaries and URLs.
 
+![NPM Version](https://img.shields.io/npm/v/skajs.svg)
+
+![Supported NodeJS versions](https://img.shields.io/node/v/skajs.svg)
+
+![Build Status](https://github.com/barseghyanartur/skajs/actions/workflows/node.js.yml/badge.svg)
+
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+
 ## Key concepts
 
 Hosts, that communicate with each other, share the Secret Key, which is used
