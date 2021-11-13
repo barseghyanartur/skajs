@@ -67,38 +67,87 @@ function toString(value) {
 }
 
 /**
- * Sorted urlencode.
+ * Convert number to hex.
+ *
+ * @param value
+ * @returns {string}
+ */
+function convertNumberToHex(value) {
+   return "\\u" + ("00" + value.charCodeAt(0).toString(16)).slice(-4);
+}
+
+/**
+ * Encode special characters.
+ *
+ * @param value
+ * @return {*}
+ */
+function encodeValue(value) {
+    let encodedValue = "";
+    for (let i = 0; i < value.length; i++) {
+        if (value.codePointAt(i) > 127) {
+            encodedValue += convertNumberToHex(value[i]);
+        } else {
+            encodedValue += value.charAt(i);
+        }
+    }
+    encodedValue = encodedValue.replace("\\\\", "\\");
+    return encodedValue;
+}
+
+/**
+ * Default value dumper.
+ *
+ * @param value
+ * @returns {*}
+ */
+function defaultValueDumper(value) {
+    if (isObject(value) || Array.isArray(value)) {
+        return encodeValue(JSON.stringify(value));
+    }
+    return value;
+}
+
+/**
+ * Sorted `urlencode`.
  *
  * @param {Object} data
  * @param {boolean} quoted
+ * @param {Function} valueDumper
  * @returns {string}
  */
-function sortedURLEncode(data, quoted = true) {
+function sortedURLEncode(data, quoted = true, valueDumper = defaultValueDumper) {
+    console.log("data: ");
+    console.log(data);
+
     let orderedData = dictToOrderedDict(data);
+    console.log("orderedData: ");
+    console.log(orderedData);
+
     let _sorted = [];
     for (const [key, value] of Object.entries(orderedData)) {
-        if (isObject(value) || Array.isArray(value)) {
-            _sorted.push(`${key}=${JSON.stringify(value)}`);
-        } else {
-            _sorted.push(`${key}=${value}`);
-        }
+        _sorted.push(`${key}=${valueDumper(value)}`);
     }
     let _res = _sorted.join("&");
     if (quoted) {
         _res = encodeURIComponent(_res);
     }
     return _res;
+    // return _res.replace("\\\\", "\\").replace("%5C%5C", "%5C");
 }
 
 /**
  * Dict to ordered dict.
  *
  * @param {Object} value
+ * @param {Function} valueDumper
  * @returns {{}|*}
  */
 function dictToOrderedDict(value) {
     if (typeof value !== "object" || !value) return value;
-    if (Array.isArray(value)) return value.map(dictToOrderedDict);
+    if (Array.isArray(value)) {
+        return value.map(val => dictToOrderedDict(val));
+    }
     return Object.keys(value)
         .sort()
         .reduce(
@@ -161,6 +210,47 @@ function extractSignedData(data, extra) {
  * *******************************************
  */
 
+class ErrorCode {
+
+    constructor(code, message)
+    {
+        this.code = code;
+        this.message = message;
+    }
+
+    toString() {
+        return this.message;
+    }
+}
+
+const INVALID_SIGNATURE = new ErrorCode(1, "Invalid signature!");
+const SIGNATURE_TIMESTAMP_EXPIRED = new ErrorCode(2, "Signature timestamp expired!");
+
+/**
+ * Signature validation result container.
+ */
+class SignatureValidationResult {
+    /**
+     * Constructor.
+     *
+     * @param {boolean} result
+     * @param {list} errors
+     */
+    constructor(result, errors) {
+        this.result = result;
+        this.errors = errors ?? [];
+    }
+
+    /**
+     * Human readable message of all errors.
+     *
+     * @returns {string}
+     */
+    message() {
+        return this.errors.join(" ");
+    }
+}
+
 /**
  * Signature.
  */
@@ -202,7 +292,8 @@ class Signature {
  * @param {string|number} validUntil
  * @param {Object} extra
  * @param {boolean} returnObject
- * @returns {boolean}
+ * @param {Function} valueDumper
+ * @returns {boolean|SignatureValidationResult}
  */
 function validateSignature(
     signature,
@@ -210,7 +301,8 @@ function validateSignature(
     secretKey,
     validUntil,
     extra = null,
-    returnObject = false
+    returnObject = false,
+    valueDumper = defaultValueDumper
 ) {
     if (!extra) {
         extra = {};
@@ -221,12 +313,23 @@ function validateSignature(
         secretKey,
         validUntil,
         SIGNATURE_LIFETIME,
-        extra
+        extra,
+        valueDumper
     );
 
     if (!returnObject) {
         return sig.signature === signature && !sig.isExpired();
     }
+
+    let result = sig.signature === signature && !sig.isExpired();
+    let errors = [];
+    if (sig.signature !== signature) {
+        errors.push(INVALID_SIGNATURE);
+    }
+    if (sig.isExpired()) {
+        errors.push(SIGNATURE_TIMESTAMP_EXPIRED);
+    }
+    return new SignatureValidationResult(result, errors);
 }
 
 /**
@@ -285,8 +388,9 @@ class RequestHelper {
      * Validate request data.
      * @param {Object} data
      * @param {string} secretKey
+     * @param {Function} valueDumper
      */
-    validateRequestData(data, secretKey) {
+    validateRequestData(data, secretKey, valueDumper = defaultValueDumper) {
         const signature = data[this.signatureParam];
         const authUser = data[this.authUserParam];
         const validUntil = data[this.validUntilParam];
@@ -302,7 +406,9 @@ class RequestHelper {
             authUser,
             secretKey,
             validUntil,
-            extraData
+            extraData,
+            false,
+            valueDumper
         );
     }
 }
@@ -340,9 +446,15 @@ function normalizeUnixTimestamp(timestamp) {
  * @param {string} authUser
  * @param {string|number} validUntil
  * @param {Object} extra
+ * @param {Function} valueDumper
  * @returns {string}
  */
-function getBase(authUser, validUntil, extra = null) {
+function getBase(
+    authUser,
+    validUntil,
+    extra = null,
+    valueDumper = defaultValueDumper
+) {
     if (!extra) {
         extra = {};
     }
@@ -353,7 +465,7 @@ function getBase(authUser, validUntil, extra = null) {
     let _base = [validUntil, authUser];
 
     if (extra) {
-        let urlencodedExtra = sortedURLEncode(extra);
+        let urlencodedExtra = sortedURLEncode(extra, true, valueDumper);
         if (urlencodedExtra) {
             _base.push(urlencodedExtra);
         }
@@ -369,14 +481,21 @@ function getBase(authUser, validUntil, extra = null) {
  * @param {string} secretKey
  * @param {string|number} validUntil
  * @param {Object} extra
+ * @param {Function} valueDumper
  * @returns {Promise<ArrayBuffer>}
  */
-function makeHash(authUser, secretKey, validUntil = null, extra = null) {
+function makeHash(
+    authUser,
+    secretKey,
+    validUntil = null,
+    extra = null,
+    valueDumper = defaultValueDumper
+) {
     if (!extra) {
         extra = {};
     }
 
-    let _base = getBase(authUser, validUntil, extra);
+    let _base = getBase(authUser, validUntil, extra, valueDumper);
     let rawHmac = createHmac("sha1", secretKey);
     rawHmac.update(_base);
     return rawHmac.digest();
@@ -390,6 +509,7 @@ function makeHash(authUser, secretKey, validUntil = null, extra = null) {
  * @param {string|number} validUntil
  * @param {number} lifetime
  * @param {Object} extra
+ * @param {Function} valueDumper
  * @returns {null|Signature}
  */
 function generateSignature(
@@ -397,7 +517,8 @@ function generateSignature(
     secretKey,
     validUntil = null,
     lifetime = SIGNATURE_LIFETIME,
-    extra = null
+    extra = null,
+    valueDumper = defaultValueDumper
 ) {
     if (!extra) {
         extra = {};
@@ -413,13 +534,42 @@ function generateSignature(
         }
     }
 
-    let hash = makeHash(authUser, secretKey, validUntil, extra);
+    let hash = makeHash(authUser, secretKey, validUntil, extra, valueDumper);
 
-    let buff = new Buffer(hash);
+    let buff = Buffer.from(hash);
 
     let signature = buff.toString("base64");
 
     return new Signature(signature, authUser, validUntil, extra);
+}
+
+
+/**
+ * Get defaults for signatureToDict function.
+ *
+ * @param {int|null} lifetime
+ * @return {Object}
+ */
+function getSignatureToDictDefaults(lifetime = null) {
+    // * @param {string|number|null} validUntil
+    // * @param {number} lifetime
+    // * @param {string} signatureParam
+    // * @param {string} authUserParam
+    // * @param {string} validUntilParam
+    // * @param {string} extraParam
+    // * @param {string} valueDumper
+    if (!lifetime) {
+        lifetime = SIGNATURE_LIFETIME;
+    }
+    return {
+        validUntil: makeValidUntil(lifetime),
+        lifetime: lifetime,
+        signatureParam: DEFAULT_SIGNATURE_PARAM,
+        authUserParam: DEFAULT_AUTH_USER_PARAM,
+        validUntilParam: DEFAULT_VALID_UNTIL_PARAM,
+        extraParam: DEFAULT_EXTRA_PARAM,
+        valueDumper: defaultValueDumper
+    };
 }
 
 /**
@@ -427,32 +577,36 @@ function generateSignature(
  *
  * @param {string} authUser
  * @param {string} secretKey
- * @param {string|number|null} validUntil
- * @param {number} lifetime
  * @param {Object} extra
- * @param {string} signatureParam
- * @param {string} authUserParam
- * @param {string} validUntilParam
- * @param {string} extraParam
+ * @param {Object} options
  * @returns {{}}
  */
 function signatureToDict(
     authUser,
     secretKey,
-    validUntil = null,
-    lifetime = SIGNATURE_LIFETIME,
     extra = null,
-    signatureParam = DEFAULT_SIGNATURE_PARAM,
-    authUserParam = DEFAULT_AUTH_USER_PARAM,
-    validUntilParam = DEFAULT_VALID_UNTIL_PARAM,
-    extraParam = DEFAULT_EXTRA_PARAM
+    options = {}
 ) {
+    let lifetime = options["lifetime"] ?? SIGNATURE_LIFETIME;
+    let defaults = getSignatureToDictDefaults(lifetime);
+    options = {
+        ...defaults,
+        ...options
+    };
+    let validUntil = options["validUntil"];
+    let signatureParam = options["signatureParam"];
+    let authUserParam = options["authUserParam"];
+    let validUntilParam = options["validUntilParam"];
+    let extraParam = options["extraParam"];
+    let valueDumper = options["valueDumper"];
+
     let signature = generateSignature(
         authUser,
         secretKey,
         validUntil,
         lifetime,
-        extra
+        extra,
+        valueDumper
     );
 
     const requestHelper = new RequestHelper(
@@ -466,27 +620,47 @@ function signatureToDict(
 }
 
 /**
+ * Defaults for validateSignedRequestData function.
+ */
+// * @param signatureParam
+// * @param authUserParam
+// * @param validUntilParam
+// * @param extraParam
+// * @param valueDumper
+const VALIDATE_SIGNED_REQUEST_DATA_DEFAULTS = {
+    signatureParam: DEFAULT_SIGNATURE_PARAM,
+    authUserParam: DEFAULT_AUTH_USER_PARAM,
+    validUntilParam: DEFAULT_VALID_UNTIL_PARAM,
+    extraParam: DEFAULT_EXTRA_PARAM,
+    valueDumper: defaultValueDumper
+}
+
+/**
  * Validate signed request data.
  *
  * @param data
  * @param secretKey
- * @param signatureParam
- * @param authUserParam
- * @param validUntilParam
- * @param extraParam
+ * @param options
  * @param validate
  * @param failSilently
  */
 function validateSignedRequestData(
     data,
     secretKey,
-    signatureParam = DEFAULT_SIGNATURE_PARAM,
-    authUserParam = DEFAULT_AUTH_USER_PARAM,
-    validUntilParam = DEFAULT_VALID_UNTIL_PARAM,
-    extraParam = DEFAULT_EXTRA_PARAM,
+    options = {},
     validate = false,
     failSilently = false
 ) {
+    options = {
+        ...VALIDATE_SIGNED_REQUEST_DATA_DEFAULTS,
+        ...options
+    };
+    let signatureParam = options["signatureParam"];
+    let authUserParam = options["authUserParam"];
+    let validUntilParam = options["validUntilParam"];
+    let extraParam = options["extraParam"];
+    let valueDumper = options["valueDumper"];
+
     const requestHelper = new RequestHelper(
         signatureParam,
         authUserParam,
@@ -494,7 +668,7 @@ function validateSignedRequestData(
         extraParam
     );
 
-    return requestHelper.validateRequestData(data, secretKey);
+    return requestHelper.validateRequestData(data, secretKey, valueDumper);
 }
 
 exports.SIGNATURE_LIFETIME = SIGNATURE_LIFETIME;
@@ -505,6 +679,9 @@ exports.DEFAULT_EXTRA_PARAM = DEFAULT_EXTRA_PARAM;
 exports.isObject = isObject;
 exports.toString = toString;
 exports.sortedURLEncode = sortedURLEncode;
+exports.convertNumberToHex = convertNumberToHex;
+exports.encodeValue = encodeValue;
+exports.defaultValueDumper = defaultValueDumper;
 exports.dictToOrderedDict = dictToOrderedDict;
 exports.makeValidUntil = makeValidUntil;
 exports.dictKeys = dictKeys;
@@ -518,3 +695,7 @@ exports.makeHash = makeHash;
 exports.generateSignature = generateSignature;
 exports.signatureToDict = signatureToDict;
 exports.validateSignedRequestData = validateSignedRequestData;
+exports.SignatureValidationResult = SignatureValidationResult;
+exports.ErrorCode = ErrorCode;
+exports.INVALID_SIGNATURE = INVALID_SIGNATURE;
+exports.SIGNATURE_TIMESTAMP_EXPIRED = SIGNATURE_TIMESTAMP_EXPIRED;

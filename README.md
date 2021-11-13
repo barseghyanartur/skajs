@@ -3,7 +3,7 @@
 Lets you easily sign data, using symmetric-key algorithm encryption. Allows
 you to validate signed data and identify possible validation errors. Uses
 sha/hmac for signature encryption. Comes with shortcut functions for signing (and
-validating) dictionaries and URLs.
+validating) dictionaries.
 
 ![NPM Version](https://img.shields.io/npm/v/skajs.svg)
 
@@ -43,8 +43,6 @@ Secret Key. It's being checked whether signature is valid and not expired.
 
 -   Sign dictionaries.
 -   Validate signed dictionaries.
--   Sign URLs. Append and sign additional URL data.
--   Validate URLs.
 
 ## Installation
 
@@ -92,64 +90,104 @@ import { signatureToDict } from "skajs";
 
 ##### Sign data
 
+**Sample usage:**
+
 ```javascript
-const signatureDict = signatureToDict("user", "your-secret_key", null, null, {
-    1: "1",
-    2: "2",
-});
+const signatureDict = signatureToDict("user", "your-secret_key");
 ```
 
-Sample output:
+**Sample output:**
 
-```json
+```javascript
 {
-    "signature": "YlZpLFsjUKBalL4x5trhkeEgqE8=",
-    "auth_user": "user",
-    "valid_until": "1378045287.0"
+  signature: 'sf40lBWO5CquFfHr6jSXxhl2oW0=',
+  auth_user: 'user',
+  valid_until: '1631827551.6',
+  extra: ''
 }
 ```
 
-Default lifetime of a signature is 10 minutes (600 seconds). If you want it
-to be different, provide a `lifetime` argument to `signUrl` function.
-
-Default name of the (GET) param holding the generated signature value
-is `signature`. If you want it to be different, provide a `signatureParam`
-argument to `signatureToDict` function.
-
-Default name of the (GET) param holding the `authUser` value is
-`auth_user`. If you want it to be different, provide a `authUserParam`
-argument to `signatureToDict` function.
-
-Default name of the (GET) param holding the `validUntil` value is
-`valid_until`. If you want it to be different, provide a `validUntilParam`
-argument to `signatureToDict` function.
-
-Note, that by default a suffix '?' is added after the given `url` and
-generated signature params. If you want that suffix to be custom, provide a
-`suffix` argument to the `signatureToDict` function. If you want it to be gone,
-set its' value to empty string.
-
-Adding of additional data to the signature works in the same way:
+**Adding of additional data to the signature works in the same way:**
 
 ```javascript
-signature_dict = signatureToDict("user", "your-secret_key", null, null, {
-    email: "john.doe@mail.example.com",
-    first_name: "John",
-    last_name: "Doe",
-});
+const signatureDict = signatureToDict(
+    "user",
+    "your-secret_key",
+    {
+        "email": "john.doe@mail.example.com",
+        "first_name": "John",
+        "last_name": "Doe",
+    }
+);
 ```
 
-Sample output:
+**Sample output:**
 
-```json
+```javascript
 {
-    "auth_user": "user",
-    "email": "john.doe@mail.example.com",
-    "extra": "email,first_name,last_name",
-    "first_name": "John",
-    "last_name": "Doe",
-    "signature": "cnSoU/LnJ/ZhfLtDLzab3a3gkug=",
-    "valid_until": 1387616469.0
+  signature: 'B0sscS+xXWU+NR+9dBCoGFnDtlw=',
+  auth_user: 'user',
+  valid_until: '1631827551.6',
+  extra: 'email,first_name,last_name',
+  email: 'john.doe@mail.example.com',
+  first_name: 'John',
+  last_name: 'Doe',
+}
+```
+**Options and defaults:**
+
+The `signatureToDict` function accepts an optional `options` argument.
+
+Default value for the `validUntil` in the `options` is 10 minutes from now. If
+you want it to be different, set `validUntil` in the `options` of
+the `signatureToDict` function.
+
+Default lifetime of a signature is 10 minutes (600 seconds). If you want it
+to be different, set `lifetime` in the `options` of the `signatureToDict`
+function.
+
+Default name of the (GET) param holding the generated signature value
+is `signature`. If you want it to be different,set the `signatureParam`
+in the `options` of the `signatureToDict` function.
+
+Default name of the (GET) param holding the `authUser` value is
+`auth_user`. If you want it to be different, set `authUserParam`
+in the `options` of the `signatureToDict` function.
+
+Default name of the (GET) param holding the `validUntil` value is
+`valid_until`. If you want it to be different,  set the `validUntilParam`
+in the `options` of the `signatureToDict` function.
+
+Default name of the (GET) param holding the `extra` value is
+`extra`. If you want it to be different, set the `extraParam`
+in the `ooptions` of the `signatureToDict` function.
+
+```javascript
+signedData = signatureToDict(
+    "user",
+    "your-secret_key",
+    {
+        email: "john.doe@mail.example.com",
+        first_name: "John",
+        last_name: "Doe",
+    },
+    {
+        authUserParam: "webshop_id",
+    }
+);
+```
+
+**Sample output:**
+
+```javascript
+{
+    webshop_id: "user",
+    email: "john.doe@mail.example.com",
+    extra: "email,first_name,last_name",
+    first_name: "John",
+    last_name: "Doe",
+    signature: "nu0Un+05z/cNOFnLwQnigoW/KmA=",
+    valid_until: 1631799172.0
 }
 ```
 
@@ -174,13 +212,34 @@ import { validateSignedRequestData } from "skajs";
 ##### Validate signed requests
 
 Validating the signed request data. Note, that `data` value is expected to
-be a dictionary; `request.GET` is given as an example. It will most likely
-vary from what's used in your framework (unless you use Django).
+be a dictionary; `request.GET` is given as an example.
 
 ```javascript
 validationResult = validateSignedRequestData(
     request.GET, // Note, that ``request.GET`` is given as example.
     "your-secret_key"
+);
+```
+
+**Options and defaults:**
+
+Similarly to `signatureToDict` function, the `validateSignedRequestData`
+also accepts a number of optional arguments (which have been described above):
+
+- signatureParam
+- authUserParam
+- validUntilParam
+- extraParam
+
+With some customizations, it would look as follows:
+
+```javascript
+validationResult = validateSignedRequestData(
+    request.GET,
+    "your-secret_key",
+    {
+        authUserParam: "webshop_id",
+    }
 );
 ```
 
