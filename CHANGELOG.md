@@ -15,7 +15,7 @@ major.minor[.revision]
 
 ## 0.1.0
 
-2021-11-09
+2021-11-13
 
 - Nicer API.
 - Fix unicode bug.
