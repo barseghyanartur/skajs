@@ -254,11 +254,11 @@ console.log(signature3);
 const signatureDict = signatureToDict(
     PAYLOAD["webshop_id"],
     SECRET_KEY,
-    validUntil,
-    SIGNATURE_LIFETIME,
     SIGNATURE_DATA,
-    DEFAULT_SIGNATURE_PARAM,
-    "webshop_id"
+    {
+        "validUntilParam": validUntil,
+        "authUserParam": "webshop_id",
+    }
 );
 
 console.log("\n === \n signatureDict \n === \n");
@@ -267,11 +267,11 @@ console.log(signatureDict);
 const signatureDict2 = signatureToDict(
     PAYLOAD["webshop_id"],
     SECRET_KEY,
-    validUntil,
-    SIGNATURE_LIFETIME,
     { 1: "1", 2: "2" },
-    DEFAULT_SIGNATURE_PARAM,
-    "webshop_id"
+    {
+        "validUntilParam": validUntil,
+        "authUserParam": "webshop_id",
+    }
 );
 
 console.log("\n === \n signatureDict2 \n === \n");
@@ -326,11 +326,10 @@ console.log(isValidSignature);
 const validSignatureDict = signatureToDict(
     PAYLOAD["webshop_id"],
     SECRET_KEY,
-    makeValidUntil(),
-    SIGNATURE_LIFETIME,
     SIGNATURE_DATA,
-    DEFAULT_SIGNATURE_PARAM,
-    "webshop_id"
+    {
+        "authUserParam": "webshop_id",
+    }
 );
 let payloadCopy = JSON.parse(JSON.stringify(PAYLOAD));
 let updatedPayload = {

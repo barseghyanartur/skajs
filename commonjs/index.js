@@ -68,6 +68,7 @@ function toString(value) {
 
 /**
  * Convert number to hex.
+ *
  * @param value
  * @returns {string}
  */
@@ -77,6 +78,7 @@ function convertNumberToHex(value) {
 
 /**
  * Encode special characters.
+ *
  * @param value
  * @return {*}
  */
@@ -95,6 +97,7 @@ function encodeValue(value) {
 
 /**
  * Default value dumper.
+ *
  * @param value
  * @returns {*}
  */
@@ -114,7 +117,13 @@ function defaultValueDumper(value) {
  * @returns {string}
  */
 function sortedURLEncode(data, quoted = true, valueDumper = defaultValueDumper) {
+    console.log("data: ");
+    console.log(data);
+
     let orderedData = dictToOrderedDict(data);
+    console.log("orderedData: ");
+    console.log(orderedData);
+
     let _sorted = [];
     for (const [key, value] of Object.entries(orderedData)) {
         _sorted.push(`${key}=${valueDumper(value)}`);
@@ -123,7 +132,8 @@ function sortedURLEncode(data, quoted = true, valueDumper = defaultValueDumper) 
     if (quoted) {
         _res = encodeURIComponent(_res);
     }
-    return _res.replace("\\\\", "\\").replace("%5C%5C", "%5C");
+    return _res;
+    // return _res.replace("\\\\", "\\").replace("%5C%5C", "%5C");
 }
 
 /**
@@ -475,7 +485,7 @@ function generateSignature(
 
     let hash = makeHash(authUser, secretKey, validUntil, extra, valueDumper);
 
-    let buff = new Buffer(hash);
+    let buff = Buffer.from(hash);
 
     let signature = buff.toString("base64");
 
