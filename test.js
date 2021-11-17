@@ -10,12 +10,15 @@ const {
     dictKeys,
     isObject,
     Signature,
+    HMACSHA256Signature,
+    HMACSHA512Signature,
     extractSignedData,
     makeValidUntil,
     validateSignature,
     DEFAULT_SIGNATURE_PARAM,
     validateSignedRequestData,
 } = require("./commonjs/index.js");
+const {defaultValueDumper} = require("./commonjs");
 // import {getSignatureData} from "./examples";
 
 /**
@@ -487,6 +490,112 @@ test("Test generateSignature", (t) => {
         }
     );
     t.deepEqual(signature3, expectedSignature3);
+
+    // Integration tests
+    // Signature test case 3a
+    const signature3a = generateSignature(
+        AUTH_USER,
+        SECRET_KEY,
+        validUntil,
+        SIGNATURE_LIFETIME,
+        {"one": "â"}
+    );
+    const expectedSignature3a = new Signature(
+        "dlT2WO/jYq7+xcvDEUkCnNW5TxA=",
+        "me@example.com",
+        "1628717009.0",
+        {"one": "â"}
+    );
+    t.deepEqual(signature3a, expectedSignature3a);
+
+    // Signature test case 4
+    const signature4 = generateSignature(
+        AUTH_USER,
+        SECRET_KEY,
+        validUntil,
+        SIGNATURE_LIFETIME,
+        {"one": {"value": "â"}}
+    );
+    const expectedSignature4 = new Signature(
+        "+pA63D4EMF2pcfIlE/dYXyNkhx4=",
+        "me@example.com",
+        "1628717009.0",
+        {"one": {"value": "â"}}
+    );
+    t.deepEqual(signature4, expectedSignature4);
+
+    // SHA256 signatures
+    // Signature test case 11
+    const signature11 = generateSignature(
+        AUTH_USER,
+        SECRET_KEY,
+        validUntil,
+        SIGNATURE_LIFETIME,
+        null,
+        defaultValueDumper,
+        HMACSHA256Signature,
+    );
+    const expectedSignature11 = new Signature(
+        "EZ7uXeeopIxK3wL62J/9tKPXoGmNk9V3KHGgwge9/ek=",
+        "me@example.com",
+        "1628717009.0",
+        {}
+    );
+    t.deepEqual(signature11, expectedSignature11);
+
+    // Signature test case 12
+    const signature12 = generateSignature(
+        AUTH_USER,
+        SECRET_KEY,
+        validUntil,
+        SIGNATURE_LIFETIME,
+        {"one": "1", "two": "2"},
+        defaultValueDumper,
+        HMACSHA256Signature,
+    );
+    const expectedSignature12 = new Signature(
+        "Cl90LfQ2L3DW2MAhZriqCfEisPdL+1aHA/M0GPc1Yr4=",
+        "me@example.com",
+        "1628717009.0",
+        {"one": "1", "two": "2"}
+    );
+    t.deepEqual(signature12, expectedSignature12);
+
+    // Signature test case 13
+    const signature13 = generateSignature(
+        AUTH_USER,
+        SECRET_KEY,
+        validUntil,
+        SIGNATURE_LIFETIME,
+        {"one": "â"},
+        defaultValueDumper,
+        HMACSHA256Signature,
+    );
+    const expectedSignature13 = new Signature(
+        "9UpLTlFgEbCJ2C4/gC4eDogn0JiuMzo7osbMEOejwkQ=",
+        "me@example.com",
+        "1628717009.0",
+        {"one": "â"}
+    );
+    t.deepEqual(signature13, expectedSignature13);
+
+    // Signature test case 14
+    const signature14 = generateSignature(
+        AUTH_USER,
+        SECRET_KEY,
+        validUntil,
+        SIGNATURE_LIFETIME,
+        {"one": {"value": "â"}},
+        defaultValueDumper,
+        HMACSHA256Signature,
+    );
+    const expectedSignature14 = new Signature(
+        "9Tg3PdJYm/2tKZtVU0F/5T6TtL39Rwy4Uniq36ZClMY=",
+        "me@example.com",
+        "1628717009.0",
+        {"one": {"value": "â"}}
+    );
+    t.deepEqual(signature14, expectedSignature14);
 });
 
 test("Test signatureToDict", (t) => {
