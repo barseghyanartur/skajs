@@ -13,6 +13,16 @@ major.minor[.revision]
   0.3.4 to 0.4).
 - All backwards incompatible changes are mentioned in this document.
 
+## 0.1.1
+
+2021-11-17
+
+```text
+Release dedicated to my dear mother.
+```
+
+- Added more signatures (`HMACSHA256Signature`, `HMACSHA512Signature`).
+
 ## 0.1.0
 
 2021-11-13

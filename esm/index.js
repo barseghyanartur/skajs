@@ -210,6 +210,11 @@ function extractSignedData(data, extra) {
  * *******************************************
  */
 
+/**
+ * ErrorCode.
+ *
+ * @class ErrorCode
+ */
 class ErrorCode {
 
     constructor(code, message)
@@ -228,6 +233,8 @@ const SIGNATURE_TIMESTAMP_EXPIRED = new ErrorCode(2, "Signature timestamp expire
 
 /**
  * Signature validation result container.
+ *
+ * @class SignatureValidationResult
  */
 class SignatureValidationResult {
     /**
@@ -253,8 +260,10 @@ class SignatureValidationResult {
 
 /**
  * Signature.
+ *
+ * @class AbstractSignature
  */
-class Signature {
+class AbstractSignature {
     /**
      * Constructor.
      *
@@ -264,6 +273,9 @@ class Signature {
      * @param {Object} extra
      */
     constructor(signature, authUser, validUntil, extra) {
+        if (this.constructor === AbstractSignature) {
+            throw new Error("Abstract classes can't be instantiated.");
+        }
         this.signature = signature;
         this.authUser = authUser;
         this.validUntil = validUntil;
@@ -281,6 +293,138 @@ class Signature {
         let res = validUntil > now;
         return !res;
     }
+
+    /**
+     * Make hash.
+     *
+     * @param {string} authUser
+     * @param {string} secretKey
+     * @param {string|number} validUntil
+     * @param {Object} extra
+     * @param {Function} valueDumper
+     * @returns {Promise<ArrayBuffer>}
+     */
+    static makeHash(
+        authUser,
+        secretKey,
+        validUntil,
+        extra,
+        valueDumper
+    ) {
+        throw new Error("Method 'makeHash()' must be implemented.");
+    }
+
+
+}
+
+/**
+ * HMACSHA1Signature.
+ *
+ * @class HMACSHA1Signature
+ * @extends {AbstractSignature}
+ */
+class HMACSHA1Signature extends AbstractSignature {
+
+    /**
+     * Make hash.
+     *
+     * @param {string} authUser
+     * @param {string} secretKey
+     * @param {string|number} validUntil
+     * @param {Object} extra
+     * @param {Function} valueDumper
+     * @returns {Promise<ArrayBuffer>}
+     */
+    static makeHash(
+        authUser,
+        secretKey,
+        validUntil,
+        extra,
+        valueDumper
+    ) {
+        return makeHash(
+            authUser,
+            secretKey,
+            validUntil,
+            extra,
+            valueDumper,
+            "sha1"
+        )
+    }
+}
+
+const Signature = HMACSHA1Signature; // For backwards compatibility
+
+/**
+ * HMACSHA256Signature.
+ *
+ * @class HMACSHA256Signature
+ * @extends {AbstractSignature}
+ */
+class HMACSHA256Signature extends AbstractSignature {
+
+    /**
+     * Make hash.
+     *
+     * @param {string} authUser
+     * @param {string} secretKey
+     * @param {string|number} validUntil
+     * @param {Object} extra
+     * @param {Function} valueDumper
+     * @returns {Promise<ArrayBuffer>}
+     */
+    static makeHash(
+        authUser,
+        secretKey,
+        validUntil,
+        extra,
+        valueDumper
+    ) {
+        return makeHash(
+            authUser,
+            secretKey,
+            validUntil,
+            extra,
+            valueDumper,
+            "sha256"
+        )
+    }
+}
+
+/**
+ * HMACSHA512Signature.
+ *
+ * @class HMACSHA512Signature
+ * @extends {AbstractSignature}
+ */
+class HMACSHA512Signature extends AbstractSignature {
+
+    /**
+     * Make hash.
+     *
+     * @param {string} authUser
+     * @param {string} secretKey
+     * @param {string|number} validUntil
+     * @param {Object} extra
+     * @param {Function} valueDumper
+     * @returns {Promise<ArrayBuffer>}
+     */
+    static makeHash(
+        authUser,
+        secretKey,
+        validUntil,
+        extra,
+        valueDumper
+    ) {
+        return makeHash(
+            authUser,
+            secretKey,
+            validUntil,
+            extra,
+            valueDumper,
+            "sha512"
+        )
+    }
 }
 
 /**
@@ -293,6 +437,7 @@ class Signature {
  * @param {Object} extra
  * @param {boolean} returnObject
  * @param {Function} valueDumper
+ * @param {AbstractSignature} signatureCls
  * @returns {boolean|SignatureValidationResult}
  */
 function validateSignature(
@@ -302,7 +447,8 @@ function validateSignature(
     validUntil,
     extra = null,
     returnObject = false,
-    valueDumper = defaultValueDumper
+    valueDumper = defaultValueDumper,
+    signatureCls = Signature,
 ) {
     if (!extra) {
         extra = {};
@@ -314,7 +460,8 @@ function validateSignature(
         validUntil,
         SIGNATURE_LIFETIME,
         extra,
-        valueDumper
+        valueDumper,
+        signatureCls,
     );
 
     if (!returnObject) {
@@ -340,6 +487,8 @@ function validateSignature(
 
 /**
  * Request helper.
+ *
+ * @class RequestHelper
  */
 class RequestHelper {
     /**
@@ -349,23 +498,26 @@ class RequestHelper {
      * @param {string} authUserParam
      * @param {string} validUntilParam
      * @param {string} extraParam
+     * @param {AbstractSignature} signatureCls
      */
     constructor(
         signatureParam = DEFAULT_SIGNATURE_PARAM,
         authUserParam = DEFAULT_AUTH_USER_PARAM,
         validUntilParam = DEFAULT_VALID_UNTIL_PARAM,
-        extraParam = DEFAULT_EXTRA_PARAM
+        extraParam = DEFAULT_EXTRA_PARAM,
+        signatureCls = Signature,
     ) {
         this.signatureParam = signatureParam;
         this.authUserParam = authUserParam;
         this.validUntilParam = validUntilParam;
         this.extraParam = extraParam;
+        this.signatureCls = signatureCls;
     }
 
     /**
      * Signature to dict.
      *
-     * @param {Signature} signature
+     * @param {AbstractSignature} signature
      * @returns {{}}
      */
     signatureToDict(signature) {
@@ -408,7 +560,8 @@ class RequestHelper {
             validUntil,
             extraData,
             false,
-            valueDumper
+            valueDumper,
+            this.signatureCls,
         );
     }
 }
@@ -482,6 +635,7 @@ function getBase(
  * @param {string|number} validUntil
  * @param {Object} extra
  * @param {Function} valueDumper
+ * @param {string} algorithm
  * @returns {Promise<ArrayBuffer>}
  */
 function makeHash(
@@ -489,14 +643,15 @@ function makeHash(
     secretKey,
     validUntil = null,
     extra = null,
-    valueDumper = defaultValueDumper
+    valueDumper = defaultValueDumper,
+    algorithm = "sha1",
 ) {
     if (!extra) {
         extra = {};
     }
 
     let _base = getBase(authUser, validUntil, extra, valueDumper);
-    let rawHmac = createHmac("sha1", secretKey);
+    let rawHmac = createHmac(algorithm, secretKey);
     rawHmac.update(_base);
     return rawHmac.digest();
 }
@@ -510,6 +665,7 @@ function makeHash(
  * @param {number} lifetime
  * @param {Object} extra
  * @param {Function} valueDumper
+ * @param {AbstractSignature} signatureCls
  * @returns {null|Signature}
  */
 function generateSignature(
@@ -518,7 +674,8 @@ function generateSignature(
     validUntil = null,
     lifetime = SIGNATURE_LIFETIME,
     extra = null,
-    valueDumper = defaultValueDumper
+    valueDumper = defaultValueDumper,
+    signatureCls= Signature
 ) {
     if (!extra) {
         extra = {};
@@ -534,7 +691,13 @@ function generateSignature(
         }
     }
 
-    let hash = makeHash(authUser, secretKey, validUntil, extra, valueDumper);
+    let hash = signatureCls.makeHash(
+        authUser,
+        secretKey,
+        validUntil,
+        extra,
+        valueDumper
+    );
 
     let buff = Buffer.from(hash);
 
@@ -568,7 +731,8 @@ function getSignatureToDictDefaults(lifetime = null) {
         authUserParam: DEFAULT_AUTH_USER_PARAM,
         validUntilParam: DEFAULT_VALID_UNTIL_PARAM,
         extraParam: DEFAULT_EXTRA_PARAM,
-        valueDumper: defaultValueDumper
+        valueDumper: defaultValueDumper,
+        signatureCls: Signature,
     };
 }
 
@@ -599,6 +763,7 @@ function signatureToDict(
     let validUntilParam = options["validUntilParam"];
     let extraParam = options["extraParam"];
     let valueDumper = options["valueDumper"];
+    let signatureCls = options["signatureCls"];
 
     let signature = generateSignature(
         authUser,
@@ -606,7 +771,8 @@ function signatureToDict(
         validUntil,
         lifetime,
         extra,
-        valueDumper
+        valueDumper,
+        signatureCls,
     );
 
     const requestHelper = new RequestHelper(
@@ -627,12 +793,14 @@ function signatureToDict(
 // * @param validUntilParam
 // * @param extraParam
 // * @param valueDumper
+// * @param signatureCls
 const VALIDATE_SIGNED_REQUEST_DATA_DEFAULTS = {
     signatureParam: DEFAULT_SIGNATURE_PARAM,
     authUserParam: DEFAULT_AUTH_USER_PARAM,
     validUntilParam: DEFAULT_VALID_UNTIL_PARAM,
     extraParam: DEFAULT_EXTRA_PARAM,
-    valueDumper: defaultValueDumper
+    valueDumper: defaultValueDumper,
+    signatureCls: Signature,
 }
 
 /**
@@ -660,6 +828,7 @@ function validateSignedRequestData(
     let validUntilParam = options["validUntilParam"];
     let extraParam = options["extraParam"];
     let valueDumper = options["valueDumper"];
+    let signatureCls = options["signatureCls"];
 
     const requestHelper = new RequestHelper(
         signatureParam,
@@ -688,6 +857,9 @@ export {
     dictKeys,
     extractSignedData,
     Signature,
+    HMACSHA1Signature,
+    HMACSHA256Signature,
+    HMACSHA512Signature,
     validateSignature,
     RequestHelper,
     unixTimestampToDate,
