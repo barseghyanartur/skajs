@@ -313,6 +313,8 @@ class AbstractSignature {
     ) {
         throw new Error("Method 'makeHash()' must be implemented.");
     }
+
+
 }
 
 /**
@@ -435,6 +437,7 @@ class HMACSHA512Signature extends AbstractSignature {
  * @param {Object} extra
  * @param {boolean} returnObject
  * @param {Function} valueDumper
+ * @param {AbstractSignature} signatureCls
  * @returns {boolean|SignatureValidationResult}
  */
 function validateSignature(
@@ -444,7 +447,8 @@ function validateSignature(
     validUntil,
     extra = null,
     returnObject = false,
-    valueDumper = defaultValueDumper
+    valueDumper = defaultValueDumper,
+    signatureCls = Signature,
 ) {
     if (!extra) {
         extra = {};
@@ -456,7 +460,8 @@ function validateSignature(
         validUntil,
         SIGNATURE_LIFETIME,
         extra,
-        valueDumper
+        valueDumper,
+        signatureCls,
     );
 
     if (!returnObject) {
@@ -493,23 +498,26 @@ class RequestHelper {
      * @param {string} authUserParam
      * @param {string} validUntilParam
      * @param {string} extraParam
+     * @param {AbstractSignature} signatureCls
      */
     constructor(
         signatureParam = DEFAULT_SIGNATURE_PARAM,
         authUserParam = DEFAULT_AUTH_USER_PARAM,
         validUntilParam = DEFAULT_VALID_UNTIL_PARAM,
-        extraParam = DEFAULT_EXTRA_PARAM
+        extraParam = DEFAULT_EXTRA_PARAM,
+        signatureCls = Signature,
     ) {
         this.signatureParam = signatureParam;
         this.authUserParam = authUserParam;
         this.validUntilParam = validUntilParam;
         this.extraParam = extraParam;
+        this.signatureCls = signatureCls;
     }
 
     /**
      * Signature to dict.
      *
-     * @param {Signature} signature
+     * @param {AbstractSignature} signature
      * @returns {{}}
      */
     signatureToDict(signature) {
@@ -552,7 +560,8 @@ class RequestHelper {
             validUntil,
             extraData,
             false,
-            valueDumper
+            valueDumper,
+            this.signatureCls,
         );
     }
 }
@@ -657,7 +666,7 @@ function makeHash(
  * @param {Object} extra
  * @param {Function} valueDumper
  * @param {AbstractSignature} signatureCls
- * @returns {null|Signature}
+ * @returns {null|AbstractSignature}
  */
 function generateSignature(
     authUser,
@@ -784,12 +793,14 @@ function signatureToDict(
 // * @param validUntilParam
 // * @param extraParam
 // * @param valueDumper
+// * @param signatureCls
 const VALIDATE_SIGNED_REQUEST_DATA_DEFAULTS = {
     signatureParam: DEFAULT_SIGNATURE_PARAM,
     authUserParam: DEFAULT_AUTH_USER_PARAM,
     validUntilParam: DEFAULT_VALID_UNTIL_PARAM,
     extraParam: DEFAULT_EXTRA_PARAM,
-    valueDumper: defaultValueDumper
+    valueDumper: defaultValueDumper,
+    signatureCls: Signature,
 }
 
 /**
@@ -817,6 +828,7 @@ function validateSignedRequestData(
     let validUntilParam = options["validUntilParam"];
     let extraParam = options["extraParam"];
     let valueDumper = options["valueDumper"];
+    let signatureCls = options["signatureCls"];
 
     const requestHelper = new RequestHelper(
         signatureParam,

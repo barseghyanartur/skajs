@@ -20,7 +20,6 @@ import {
     defaultValueDumper,
 } from "./index.js";
 
-
 /**
  * Helper functions for testing.
  */
@@ -1071,6 +1070,96 @@ test("Test validateSignature", (t) => {
     );
     t.is(isValidSignature2, false);
     t.is(signature2.isExpired(), true);
+
+    // Test case 21 - valid non-expired signature
+    const signature21 = generateSignature(
+        AUTH_USER,
+        SECRET_KEY,
+        makeValidUntil(),
+        SIGNATURE_LIFETIME,
+        null,
+        defaultValueDumper,
+        HMACSHA256Signature,
+    );
+    const isValidSignature21 = validateSignature(
+        signature21.signature,
+        signature21.authUser,
+        SECRET_KEY,
+        signature21.validUntil,
+        signature21.extra,
+        false,
+        defaultValueDumper,
+        HMACSHA256Signature,
+    );
+    t.is(isValidSignature21, true);
+
+    // Test case 22 - expired signature
+    const signature22 = generateSignature(
+        AUTH_USER,
+        SECRET_KEY,
+        validUntil,
+        SIGNATURE_LIFETIME,
+        null,
+        defaultValueDumper,
+        HMACSHA256Signature,
+    );
+    const isValidSignature22 = validateSignature(
+        signature22.signature,
+        signature22.authUser,
+        SECRET_KEY,
+        signature22.validUntil,
+        signature22.extra,
+        false,
+        defaultValueDumper,
+        HMACSHA256Signature,
+    );
+    t.is(isValidSignature22, false);
+    t.is(signature22.isExpired(), true);
+
+    // Test case 31 - valid non-expired signature
+    const signature31 = generateSignature(
+        AUTH_USER,
+        SECRET_KEY,
+        makeValidUntil(),
+        SIGNATURE_LIFETIME,
+        null,
+        defaultValueDumper,
+        HMACSHA512Signature,
+    );
+    const isValidSignature31 = validateSignature(
+        signature31.signature,
+        signature31.authUser,
+        SECRET_KEY,
+        signature31.validUntil,
+        signature31.extra,
+        false,
+        defaultValueDumper,
+        HMACSHA512Signature,
+    );
+    t.is(isValidSignature31, true);
+
+    // Test case 32 - expired signature
+    const signature32 = generateSignature(
+        AUTH_USER,
+        SECRET_KEY,
+        validUntil,
+        SIGNATURE_LIFETIME,
+        null,
+        defaultValueDumper,
+        HMACSHA512Signature,
+    );
+    const isValidSignature32 = validateSignature(
+        signature32.signature,
+        signature32.authUser,
+        SECRET_KEY,
+        signature32.validUntil,
+        signature32.extra,
+        false,
+        defaultValueDumper,
+        HMACSHA512Signature,
+    );
+    t.is(isValidSignature32, false);
+    t.is(signature32.isExpired(), true);
 });
 
 test("Test validateSignedRequestData", (t) => {
