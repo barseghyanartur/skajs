@@ -17,9 +17,8 @@ const {
     validateSignature,
     DEFAULT_SIGNATURE_PARAM,
     validateSignedRequestData,
+    defaultValueDumper,
 } = require("./commonjs/index.js");
-const {defaultValueDumper} = require("./commonjs");
-// import {getSignatureData} from "./examples";
 
 /**
  * Helper functions for testing.

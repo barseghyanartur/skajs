@@ -847,7 +847,6 @@ exports.Signature = Signature;
 exports.HMACSHA1Signature = HMACSHA1Signature;
 exports.HMACSHA256Signature = HMACSHA256Signature;
 exports.HMACSHA512Signature = HMACSHA512Signature;
-exports.Signature = Signature;
 exports.validateSignature = validateSignature;
 exports.RequestHelper = RequestHelper;
 exports.unixTimestampToDate = unixTimestampToDate;
