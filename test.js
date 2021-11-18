@@ -596,6 +596,79 @@ test("Test generateSignature", (t) => {
         {"one": {"value": "â"}}
     );
     t.deepEqual(signature14, expectedSignature14);
+
+    // SHA512 signatures
+    // Signature test case 21
+    const signature21 = generateSignature(
+        AUTH_USER,
+        SECRET_KEY,
+        validUntil,
+        SIGNATURE_LIFETIME,
+        null,
+        defaultValueDumper,
+        HMACSHA512Signature,
+    );
+    const expectedSignature21 = new Signature(
+        "7QcInLFxLrv1TeZZY4EXbAc1YguBlcjmYfFe5J+FH4TAOquSBZvKwYLSQCS4VVmdhDDU1h1zVlPDc4MAW6SHGQ==",
+        "me@example.com",
+        "1628717009.0",
+        {}
+    );
+    t.deepEqual(signature21, expectedSignature21);
+
+    // Signature test case 22
+    const signature22 = generateSignature(
+        AUTH_USER,
+        SECRET_KEY,
+        validUntil,
+        SIGNATURE_LIFETIME,
+        {"one": "1", "two": "2"},
+        defaultValueDumper,
+        HMACSHA512Signature,
+    );
+    const expectedSignature22 = new Signature(
+        "+Bm5xtd3Cl+7VV0RM6H14z68M8vWuMP168m3UsXLP1jHTTQCg3mXxTncZ9a57AoQefh/qNmDdnD5AmFYGzJ+PQ==",
+        "me@example.com",
+        "1628717009.0",
+        {"one": "1", "two": "2"}
+    );
+    t.deepEqual(signature22, expectedSignature22);
+
+    // Signature test case 23
+    const signature23 = generateSignature(
+        AUTH_USER,
+        SECRET_KEY,
+        validUntil,
+        SIGNATURE_LIFETIME,
+        {"one": "â"},
+        defaultValueDumper,
+        HMACSHA512Signature,
+    );
+    const expectedSignature23 = new Signature(
+        "yockrWxDncGJ2/HMEi/ma/auEmv8xlIMm5U50CuTFYSKbzrgNPh4OXgax/s2d96+paaLagwmnZK1+xUGHeArXw==",
+        "me@example.com",
+        "1628717009.0",
+        {"one": "â"}
+    );
+    t.deepEqual(signature23, expectedSignature23);
+
+    // Signature test case 14
+    const signature24 = generateSignature(
+        AUTH_USER,
+        SECRET_KEY,
+        validUntil,
+        SIGNATURE_LIFETIME,
+        {"one": {"value": "â"}},
+        defaultValueDumper,
+        HMACSHA512Signature,
+    );
+    const expectedSignature24 = new Signature(
+        "OlFZzu/SlBQYWny3CVvP7ghiL6X8G4r/yS9yNl8N+9b1arae3AkMLCp+0MuLs2sp8qdM3j+a7MYdCQCBSOnAoQ==",
+        "me@example.com",
+        "1628717009.0",
+        {"one": {"value": "â"}}
+    );
+    t.deepEqual(signature24, expectedSignature24);
 });
 
 test("Test signatureToDict", (t) => {
