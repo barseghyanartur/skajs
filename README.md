@@ -5,7 +5,10 @@ you to validate signed data and identify possible validation errors. Uses
 sha/hmac for signature encryption. Comes with shortcut functions for signing (and
 validating) dictionaries.
 
-![NPM Version](https://img.shields.io/npm/v/skajs.svg) ![Supported NodeJS versions](https://img.shields.io/node/v/skajs.svg) ![Build Status](https://github.com/barseghyanartur/skajs/actions/workflows/node.js.yml/badge.svg) ![License](https://img.shields.io/badge/license-MIT-blue.svg)
+[![NPM Version](https://img.shields.io/npm/v/skajs.svg)](https://www.npmjs.com/package/skajs)
+[![Supported NodeJS versions](https://img.shields.io/node/v/skajs.svg)](https://www.npmjs.com/package/skajs)
+[![Build Status](https://github.com/barseghyanartur/skajs/actions/workflows/node.js.yml/badge.svg)](https://github.com/barseghyanartur/skajs/actions)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/barseghyanartur/skajs/#License)
 
 ## Key concepts
 
