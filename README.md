@@ -157,7 +157,12 @@ in the `options` of the `signatureToDict` function.
 
 Default name of the (GET) param holding the `extra` value is
 `extra`. If you want it to be different, set the `extraParam`
-in the `ooptions` of the `signatureToDict` function.
+in the `options` of the `signatureToDict` function.
+
+Default hashing algorithm is `SHA1`. If you want it to be different, set the
+`signatureCls` in the `options` of the `signatureToDict` function. Supported
+classes are `HMACSHA1Signature` (alias of `Signature`), `HMACSHA256Signature`
+and `HMACSHA512Signature`.
 
 ```javascript
 signedData = signatureToDict(
@@ -227,6 +232,7 @@ also accepts a number of optional arguments (which have been described above):
 - authUserParam
 - validUntilParam
 - extraParam
+- signatureCls
 
 With some customizations, it would look as follows:
 
