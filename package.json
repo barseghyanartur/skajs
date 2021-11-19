@@ -19,7 +19,7 @@
         "node": ">=14"
     },
     "scripts": {
-        "test": "ava"
+        "test": "nyc --reporter=html --reporter=text ava"
     },
     "ava": {
         "files": [
@@ -39,9 +39,10 @@
     },
     "devDependencies": {
         "ava": "^3.15.0",
+        "axios": "^0.24.0",
+        "nyc": "^15.1.0",
         "prettier": "^2.3.2",
         "tsd": "^0.14.0",
-        "xo": "^0.38.2",
-        "axios": "^0.24.0"
+        "xo": "^0.38.2"
     }
 }

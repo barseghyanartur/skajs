@@ -3,3 +3,5 @@ yarn.lock
 package-lock.json
 .idea/
 secret_*.js
+.nyc_output/
+coverage/
