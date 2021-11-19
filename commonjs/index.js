@@ -779,7 +779,8 @@ function signatureToDict(
         signatureParam,
         authUserParam,
         validUntilParam,
-        extraParam
+        extraParam,
+        signatureCls
     );
 
     return requestHelper.signatureToDict(signature);
