@@ -41,6 +41,19 @@ Secret Key. It's being checked whether signature is valid and not expired.
 -   Sign dictionaries.
 -   Validate signed dictionaries.
 
+## Eco-system
+
+Need ``ska`` for other languages? Check the following affiliated projects:
+
+- `ska <https://github.com/barseghyanartur/ska>`_: ``ska`` implementation
+  for Python. This was the first implementation from which current project
+  originated.
+- `skaphp <https://github.com/barseghyanartur/skaphp>`_: ``ska`` implementation
+  for PHP (>= 7.2).
+
+Generated signatures are intercompatible between Python, NodeJS and PHP
+implementations.
+
 ## Installation
 
 Latest stable version from NPM registry:

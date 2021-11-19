@@ -666,7 +666,7 @@ function makeHash(
  * @param {Object} extra
  * @param {Function} valueDumper
  * @param {AbstractSignature} signatureCls
- * @returns {null|Signature}
+ * @returns {null|AbstractSignature}
  */
 function generateSignature(
     authUser,
@@ -675,7 +675,7 @@ function generateSignature(
     lifetime = SIGNATURE_LIFETIME,
     extra = null,
     valueDumper = defaultValueDumper,
-    signatureCls= Signature
+    signatureCls = Signature
 ) {
     if (!extra) {
         extra = {};
@@ -703,7 +703,7 @@ function generateSignature(
 
     let signature = buff.toString("base64");
 
-    return new Signature(signature, authUser, validUntil, extra);
+    return new signatureCls(signature, authUser, validUntil, extra);
 }
 
 
@@ -834,7 +834,8 @@ function validateSignedRequestData(
         signatureParam,
         authUserParam,
         validUntilParam,
-        extraParam
+        extraParam,
+        signatureCls
     );
 
     return requestHelper.validateRequestData(data, secretKey, valueDumper);
