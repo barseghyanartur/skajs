@@ -534,7 +534,7 @@ test("Test generateSignature", (t) => {
         defaultValueDumper,
         HMACSHA256Signature,
     );
-    const expectedSignature11 = new Signature(
+    const expectedSignature11 = new HMACSHA256Signature(
         "EZ7uXeeopIxK3wL62J/9tKPXoGmNk9V3KHGgwge9/ek=",
         "me@example.com",
         "1628717009.0",
@@ -552,7 +552,7 @@ test("Test generateSignature", (t) => {
         defaultValueDumper,
         HMACSHA256Signature,
     );
-    const expectedSignature12 = new Signature(
+    const expectedSignature12 = new HMACSHA256Signature(
         "Cl90LfQ2L3DW2MAhZriqCfEisPdL+1aHA/M0GPc1Yr4=",
         "me@example.com",
         "1628717009.0",
@@ -570,7 +570,7 @@ test("Test generateSignature", (t) => {
         defaultValueDumper,
         HMACSHA256Signature,
     );
-    const expectedSignature13 = new Signature(
+    const expectedSignature13 = new HMACSHA256Signature(
         "9UpLTlFgEbCJ2C4/gC4eDogn0JiuMzo7osbMEOejwkQ=",
         "me@example.com",
         "1628717009.0",
@@ -588,7 +588,7 @@ test("Test generateSignature", (t) => {
         defaultValueDumper,
         HMACSHA256Signature,
     );
-    const expectedSignature14 = new Signature(
+    const expectedSignature14 = new HMACSHA256Signature(
         "9Tg3PdJYm/2tKZtVU0F/5T6TtL39Rwy4Uniq36ZClMY=",
         "me@example.com",
         "1628717009.0",
@@ -607,7 +607,7 @@ test("Test generateSignature", (t) => {
         defaultValueDumper,
         HMACSHA512Signature,
     );
-    const expectedSignature21 = new Signature(
+    const expectedSignature21 = new HMACSHA512Signature(
         "7QcInLFxLrv1TeZZY4EXbAc1YguBlcjmYfFe5J+FH4TAOquSBZvKwYLSQCS4VVmdhDDU1h1zVlPDc4MAW6SHGQ==",
         "me@example.com",
         "1628717009.0",
@@ -625,7 +625,7 @@ test("Test generateSignature", (t) => {
         defaultValueDumper,
         HMACSHA512Signature,
     );
-    const expectedSignature22 = new Signature(
+    const expectedSignature22 = new HMACSHA512Signature(
         "+Bm5xtd3Cl+7VV0RM6H14z68M8vWuMP168m3UsXLP1jHTTQCg3mXxTncZ9a57AoQefh/qNmDdnD5AmFYGzJ+PQ==",
         "me@example.com",
         "1628717009.0",
@@ -643,7 +643,7 @@ test("Test generateSignature", (t) => {
         defaultValueDumper,
         HMACSHA512Signature,
     );
-    const expectedSignature23 = new Signature(
+    const expectedSignature23 = new HMACSHA512Signature(
         "yockrWxDncGJ2/HMEi/ma/auEmv8xlIMm5U50CuTFYSKbzrgNPh4OXgax/s2d96+paaLagwmnZK1+xUGHeArXw==",
         "me@example.com",
         "1628717009.0",
@@ -661,7 +661,7 @@ test("Test generateSignature", (t) => {
         defaultValueDumper,
         HMACSHA512Signature,
     );
-    const expectedSignature24 = new Signature(
+    const expectedSignature24 = new HMACSHA512Signature(
         "OlFZzu/SlBQYWny3CVvP7ghiL6X8G4r/yS9yNl8N+9b1arae3AkMLCp+0MuLs2sp8qdM3j+a7MYdCQCBSOnAoQ==",
         "me@example.com",
         "1628717009.0",
