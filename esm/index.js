@@ -48,25 +48,6 @@ function isObject(value) {
 }
 
 /**
- * Convert value to string.
- *
- * @param {Object} value
- * @returns {string}
- */
-function toString(value) {
-    return (
-        Object.entries(value)
-            .reduce((a, e) => {
-                if (typeof e[1] != "function") {
-                    a += `'${e[0]}': '${e[1]}', `;
-                }
-                return a;
-            }, "{")
-            .slice(1, -2) + "}"
-    );
-}
-
-/**
  * Convert number to hex.
  *
  * @param value
@@ -849,7 +830,6 @@ export {
     DEFAULT_VALID_UNTIL_PARAM,
     DEFAULT_EXTRA_PARAM,
     isObject,
-    toString,
     sortedURLEncode,
     convertNumberToHex,
     encodeValue,

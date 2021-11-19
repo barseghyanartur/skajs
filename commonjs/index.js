@@ -48,25 +48,6 @@ function isObject(value) {
 }
 
 /**
- * Convert value to string.
- *
- * @param {Object} value
- * @returns {string}
- */
-function toString(value) {
-    return (
-        Object.entries(value)
-            .reduce((a, e) => {
-                if (typeof e[1] != "function") {
-                    a += `'${e[0]}': '${e[1]}', `;
-                }
-                return a;
-            }, "{")
-            .slice(1, -2) + "}"
-    );
-}
-
-/**
  * Convert number to hex.
  *
  * @param value
@@ -848,7 +829,6 @@ exports.DEFAULT_AUTH_USER_PARAM = DEFAULT_AUTH_USER_PARAM;
 exports.DEFAULT_VALID_UNTIL_PARAM = DEFAULT_VALID_UNTIL_PARAM;
 exports.DEFAULT_EXTRA_PARAM = DEFAULT_EXTRA_PARAM;
 exports.isObject = isObject;
-exports.toString = toString;
 exports.sortedURLEncode = sortedURLEncode;
 exports.convertNumberToHex = convertNumberToHex;
 exports.encodeValue = encodeValue;
