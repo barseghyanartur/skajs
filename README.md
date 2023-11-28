@@ -8,6 +8,7 @@ validating) dictionaries.
 [![NPM Version](https://img.shields.io/npm/v/skajs.svg)](https://www.npmjs.com/package/skajs)
 [![Supported NodeJS versions](https://img.shields.io/node/v/skajs.svg)](https://www.npmjs.com/package/skajs)
 [![Build Status](https://github.com/barseghyanartur/skajs/actions/workflows/node.js.yml/badge.svg)](https://github.com/barseghyanartur/skajs/actions)
+[![Coverage Status](https://coveralls.io/repos/github/barseghyanartur/skajs/badge.svg?branch=main)](https://coveralls.io/github/barseghyanartur/skajs?branch=main)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/barseghyanartur/skajs/#License)
 
 ## Key concepts
