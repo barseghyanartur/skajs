@@ -38,6 +38,7 @@ Secret Key. It's being checked whether signature is valid and not expired.
 
 ## Features
 
+-   Sign URLs.
 -   Sign dictionaries.
 -   Validate signed dictionaries.
 
@@ -82,25 +83,25 @@ node examples.mjs
 
 #### Sender side
 
-Signing dictionaries is as simple as follows.
+Signing dictionaries and URLs is as simple as follows.
 
 ##### Required imports.
 
 **CommonJS**
 
 ```javascript
-const { signatureToDict } = require("skajs");
+const { signatureToDict, signURL } = require("skajs");
 ```
 
 **ESM**
 
 ```javascript
-import { signatureToDict } from "skajs";
+import { signatureToDict, signURL } from "skajs";
 ```
 
 ##### Sign data
 
-**Sample usage:**
+**Sample usage, sign a dictionary:**
 
 ```javascript
 const signatureDict = signatureToDict("user", "your-secret_key");
@@ -143,6 +144,18 @@ const signatureDict = signatureToDict(
   first_name: 'John',
   last_name: 'Doe',
 }
+```
+
+**Sample usage, sign a URL:**
+
+```javascript
+const signedURL = signURL("user", "your-secret_key", "http://e.com/api/");
+```
+
+**Sample output:**
+
+```javascript
+'http://e.com/api/?valid_until=1378045287.0&auth_user=user&signature=YlZpLFsjUKBalL4x5trhkeEgqE8%3D'
 ```
 **Options and defaults:**
 
@@ -227,7 +240,16 @@ import { validateSignedRequestData } from "skajs";
 ##### Validate signed requests
 
 Validating the signed request data. Note, that `data` value is expected to
-be a dictionary; `request.GET` is given as an example.
+be a dictionary; `request.POST` is given as an example.
+
+```javascript
+validationResult = validateSignedRequestData(
+    request.POST, // Note, that ``request.POST`` is given as example.
+    "your-secret_key"
+);
+```
+
+In case of signed URLs, it could look as follows:
 
 ```javascript
 validationResult = validateSignedRequestData(

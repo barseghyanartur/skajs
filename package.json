@@ -1,6 +1,6 @@
 {
     "name": "skajs",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "Sign- and validate- data (dictionaries, strings) using symmetric-key algorithm.",
     "license": "MIT",
     "repository": "barseghyanartur/skajs",

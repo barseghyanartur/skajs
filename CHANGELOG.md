@@ -13,6 +13,12 @@ major.minor[.revision]
   0.3.4 to 0.4).
 - All backwards incompatible changes are mentioned in this document.
 
+## 0.1.3
+
+2023-11-28
+
+- Add `signURL` functionality.
+
 ## 0.1.2
 
 2021-11-19
