@@ -19,7 +19,7 @@
         "node": ">=14"
     },
     "scripts": {
-        "test": "nyc --reporter=html --reporter=text ava"
+        "test": "nyc --reporter=html --reporter=json --reporter=text ava"
     },
     "ava": {
         "files": [
