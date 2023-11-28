@@ -32,6 +32,12 @@ const DEFAULT_VALID_UNTIL_PARAM = "valid_until";
 const DEFAULT_EXTRA_PARAM = "extra";
 
 /**
+ * Suffix to add after the ``url`` and before the appended
+ * signature params when using ``signURL`` function/method.
+ */
+const DEFAULT_URL_SUFFIX = "?";
+
+/**
  * *******************************************
  * *************** Helpers *****************
  * *******************************************
@@ -87,6 +93,33 @@ function defaultValueDumper(value) {
         return encodeValue(JSON.stringify(value));
     }
     return value;
+}
+
+/**
+ * `urlencode`.
+ *
+ * @param {Object} data
+ * @param {boolean} quoted
+ * @param {Function} valueDumper
+ * @returns {string}
+ */
+function urlEncode(data, quoted = true, valueDumper = defaultValueDumper) {
+    console.log("data: ");
+    console.log(data);
+
+    let orderedData = data;
+    console.log("orderedData: ");
+    console.log(orderedData);
+
+    let _sorted = [];
+    for (const [key, value] of Object.entries(orderedData)) {
+        _sorted.push(`${key}=${valueDumper(value)}`);
+    }
+    let _res = _sorted.join("&");
+    if (quoted) {
+        _res = encodeURIComponent(_res);
+    }
+    return _res;
 }
 
 /**
@@ -496,6 +529,36 @@ class RequestHelper {
     }
 
     /**
+     * Signature to URL.
+     *
+     * @param {AbstractSignature} signature
+     * @param {string} url
+     * @param {string} suffix
+     * @param {Function} valueDumper
+     * @returns {{}}
+     */
+    signatureToURL(
+        signature,
+        url,
+        suffix = DEFAULT_URL_SUFFIX,
+        valueDumper = defaultValueDumper,
+    ) {
+        let data = {};
+
+        data[this.signatureParam] = signature.signature;
+        data[this.authUserParam] = signature.authUser;
+        data[this.validUntilParam] = signature.validUntil;
+        data[this.extraParam] = dictKeys(signature.extra, true);
+
+        let combined = {
+            ...data,
+            ...signature.extra,
+        };
+
+        return `${url}${suffix}${sortedURLEncode(combined, false, valueDumper)}`;
+    }
+
+    /**
      * Signature to dict.
      *
      * @param {AbstractSignature} signature
@@ -718,6 +781,58 @@ function getSignatureToDictDefaults(lifetime = null) {
 }
 
 /**
+ * Sign URL.
+ *
+ * @param {string} authUser
+ * @param {string} secretKey
+ * @param {string} url
+ * @param {Object} extra
+ * @param {Object} options
+ * @returns {{}}
+ */
+function signURL(
+    authUser,
+    secretKey,
+    url,
+    extra = null,
+    options = {}
+) {
+    let lifetime = options["lifetime"] ?? SIGNATURE_LIFETIME;
+    let defaults = getSignatureToDictDefaults(lifetime);
+    options = {
+        ...defaults,
+        ...options
+    };
+    let validUntil = options["validUntil"];
+    let signatureParam = options["signatureParam"];
+    let authUserParam = options["authUserParam"];
+    let validUntilParam = options["validUntilParam"];
+    let extraParam = options["extraParam"];
+    let valueDumper = options["valueDumper"];
+    let signatureCls = options["signatureCls"];
+
+    let signature = generateSignature(
+        authUser,
+        secretKey,
+        validUntil,
+        lifetime,
+        extra,
+        valueDumper,
+        signatureCls,
+    );
+
+    const requestHelper = new RequestHelper(
+        signatureParam,
+        authUserParam,
+        validUntilParam,
+        extraParam,
+        signatureCls
+    );
+
+    return requestHelper.signatureToURL(signature, url);
+}
+
+/**
  * Signature to dict.
  *
  * @param {string} authUser
@@ -828,7 +943,9 @@ exports.DEFAULT_SIGNATURE_PARAM = DEFAULT_SIGNATURE_PARAM;
 exports.DEFAULT_AUTH_USER_PARAM = DEFAULT_AUTH_USER_PARAM;
 exports.DEFAULT_VALID_UNTIL_PARAM = DEFAULT_VALID_UNTIL_PARAM;
 exports.DEFAULT_EXTRA_PARAM = DEFAULT_EXTRA_PARAM;
+exports.DEFAULT_URL_SUFFIX = DEFAULT_URL_SUFFIX;
 exports.isObject = isObject;
+exports.urlEncode = urlEncode;
 exports.sortedURLEncode = sortedURLEncode;
 exports.convertNumberToHex = convertNumberToHex;
 exports.encodeValue = encodeValue;
@@ -847,6 +964,7 @@ exports.unixTimestampToDate = unixTimestampToDate;
 exports.getBase = getBase;
 exports.makeHash = makeHash;
 exports.generateSignature = generateSignature;
+exports.signURL = signURL;
 exports.signatureToDict = signatureToDict;
 exports.validateSignedRequestData = validateSignedRequestData;
 exports.SignatureValidationResult = SignatureValidationResult;
